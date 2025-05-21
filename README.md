@@ -12,7 +12,11 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
 The following flow chart outlines how the Taiko Groups Map is generated, built, and hosted on Taiko Source.
 
 ```mermaid
-flowchart LR
+---
+config:
+  theme: neutral
+---
+flowchart BT
     subgraph GL["Google"]
         GF["Google Forms"] -- User Submit --> GSR
         subgraph GS["Google Sheet"]
