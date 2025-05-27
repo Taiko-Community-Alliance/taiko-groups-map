@@ -7,6 +7,7 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
  - [Leaflet Map Clustering](https://github.com/Leaflet/Leaflet.markercluster)
  - [Leaflet SidePanel](https://github.com/cyclingbyte/Leaflet.SidePanel)
  - [Leaflet RepeatedMarkers](https://gitlab.com/IvanSanchez/Leaflet.RepeatedMarkers)
+ - [Public Google Sheets Parser](https://github.com/fureweb-com/public-google-sheets-parser) (Might do DIY, or use this library)
 
 ## Build Workflow and Hosting
 The following flow chart outlines how the Taiko Groups Map is generated, built, and hosted on Taiko Source.
@@ -20,12 +21,13 @@ flowchart BT
     subgraph GL["Google"]
         GF["Google Forms"] -- User Submit --> GSR
         subgraph GS["Google Sheet"]
-            GSR["Submissions Sheet"] -- Cleanup --> GSP["Map Sheet"]
+            GSR["Submissions Sheet"] -- Cleanup --> GSP["Final Public Sheet"]
         end
     end
-    GSP -- ?? --> GHJSON
+    GSP --> PARSE --> GHJSON
     subgraph GH["Github"]
         subgraph GHR["Taiko Groups Repository"]
+            PARSE["Google Sheets Fetch/Parse"]
             subgraph SRC["src"]
                 GHJSON["Map JSON"]
             end
