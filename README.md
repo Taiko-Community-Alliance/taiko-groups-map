@@ -24,12 +24,11 @@ flowchart BT
             GSR["Submissions Sheet"] -- Cleanup --> GSP["Final Public Sheet"]
         end
     end
-    GSP --> PARSE --> GHJSON
+    GSP --> PARSE
     subgraph GH["Github"]
         subgraph GHR["Taiko Groups Repository"]
-            PARSE["Google Sheets Fetch/Parse"]
             subgraph SRC["src"]
-                GHJSON["Map JSON"]
+                PARSE["Google Sheets Fetch/Parse"]
             end
             subgraph ST["Static Assets"]
                 GHJSONST["Map JSON"]
