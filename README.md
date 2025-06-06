@@ -20,6 +20,7 @@ flowchart BT
     subgraph GL["Google"]
         GF["Google Forms"] -- User Submit --> GSR
         subgraph GS["Google Sheet"]
+            GEO["Lat/Long Lookup"] -- Apps Script --> GSP
             GSR["Submissions Sheet"] -- Cleanup --> GSP["Final Public Sheet"]
         end
     end
