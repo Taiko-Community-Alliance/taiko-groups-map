@@ -6,7 +6,7 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
  - [Leaflet.js](https://github.com/Leaflet/Leaflet)
  - [Leaflet Map Clustering](https://github.com/Leaflet/Leaflet.markercluster)
  - [Leaflet SidePanel](https://github.com/cyclingbyte/Leaflet.SidePanel)
- - [Leaflet RepeatedMarkers](https://gitlab.com/IvanSanchez/Leaflet.RepeatedMarkers)
+ - [Leaflet RepeatedMarkers](https://gitlab.com/IvanSanchez/Leaflet.RepeatedMarkers) (nice to have, but not required)
  - [Public Google Sheets Parser](https://github.com/fureweb-com/public-google-sheets-parser) (Might do DIY, or use this library)
 
 ## Build Workflow and Hosting
