@@ -23,7 +23,7 @@ flowchart BT
             GSR["Submissions Sheet"] -- Cleanup --> GSP["Final Public Sheet"]
         end
     end
-    GSP --> PARSE
+    GSP -- fetch --> PARSE
     subgraph GH["Github"]
         subgraph GHR["Taiko Groups Repository"]
             subgraph SRC["src"]
