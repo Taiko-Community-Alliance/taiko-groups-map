@@ -1,0 +1,33 @@
+{
+  "name": "taiko",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build:clean && npm run build:rollup && npm run build:copy",
+    "build:rollup": "rollup -c",
+    "build:copy": "cp -r public/* dist/",
+    "build:clean": "rm -rf dist",
+    "serve": "npx http-server dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.8.3",
+    "csv-parse": "^5.6.0",
+    "throat": "^6.0.2"
+  },
+  "devDependencies": {
+    "@csstools/normalize.css": "^12.1.1",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "http-server": "^14.1.1",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "rollup": "^4.42.0",
+    "rollup-plugin-import-css": "^4.0.1"
+  }
+}
