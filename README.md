@@ -7,7 +7,7 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
 
  - [x] Project outline
  - [x] Build scripts
- - [ ] Get SidePanel bundled and basic functionality working
+ - [x] Get SidePanel bundled and basic functionality working
  - [x] Get Github Actions page publishing working
  - [ ] Incorporate csv download into build process, remove json data from repo (and history)
 

@@ -27,6 +27,7 @@
     "http-server": "^14.1.1",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
+    "leaflet.sidepanel": "^1.2.2",
     "rollup": "^4.42.0",
     "rollup-plugin-import-css": "^4.0.1"
   }

@@ -1,13 +1,15 @@
 import L from 'leaflet';
 import 'leaflet.markercluster';
+import 'leaflet.sidepanel';
 import points from './data.json';
 import '@csstools/normalize.css/normalize.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.sidepanel/dist/leaflet.sidepanel.css';
 import './map-styles.css';
 
-var map = L.map('map').setView([37.7749, L.Util.wrapNum(-122.4194, [0,360], true)], 4); 
+var map = L.map('map').setView([37.7749, L.Util.wrapNum(-122.4194, [0,360], true)], 3); 
 
 //var myRepeatingMarkers = L.gridLayer.repeatedMarkers().addTo(map);
 
@@ -26,7 +28,6 @@ const markers = L.markerClusterGroup({
 
 const validPoints = points.filter(({lat,lon,name}) => lat && lon && name);
 
-
 // generates an html description for a point, which possibly includes a website
 function getDescription(point) {
   var description = `<h3>${point.name}</h3><p>${point.city}, ${point.country}`;
@@ -39,44 +40,42 @@ function getDescription(point) {
 
 validPoints.forEach(function(point) {
 	var marker = L.marker([point.lat, L.Util.wrapNum(point.lon, [0,360], true)], {title: point.name}).bindTooltip(point.name);
-  // @TODO
-	// marker.on('click', function() {
-	// 	document.getElementById('tab1-content').innerHTML = getDescription(point);
-	// 	openSidepanel();
-	// });
+	marker.on('click', function() {
+		document.getElementById('tab1-content').innerHTML = getDescription(point);
+		openSidepanel();
+	});
 	markers.addLayer(marker);
 });
 
 // // Add the marker cluster group to the map
 map.addLayer(markers);
 
-// @TODO
-// // Initialize the side panel
-// const sidepanel = L.control.sidepanel('panelID', {
-// 	panelPosition: 'left',
-// 	startTab: 'tab-1'
-// }).addTo(map);
+// Initialize the side panel
+const sidepanel = L.control.sidepanel('panelID', {
+	panelPosition: 'left',
+	startTab: 'tab-1'
+}).addTo(map);
 
-// function openSidepanel() {
-// 	const panel = document.getElementById('panelID');
-// 	if (!L.DomUtil.hasClass(panel, 'opened')) {
-// 		L.DomUtil.addClass(panel, 'opened');
-// 		L.DomUtil.removeClass(panel, 'closed');
-// 	}
-// }
+function openSidepanel() {
+	const panel = document.getElementById('panelID');
+	if (!L.DomUtil.hasClass(panel, 'opened')) {
+		L.DomUtil.addClass(panel, 'opened');
+		L.DomUtil.removeClass(panel, 'closed');
+	}
+}
 
-// // Handle cluster click event to show combined content in sidepanel
-// markers.on('clusterclick', function (a) {
-//   const content = a.layer.getAllChildMarkers().map(m => {
-//     const point = validPoints.find(p => p.name === m.options.title);
-//     const description = point ? getDescription(point) : '';
-//     return description;
-//   }).join('');
-//   document.getElementById('tab1-content').innerHTML = content;
-//   openSidepanel();
-// });
+// Handle cluster click event to show combined content in sidepanel
+markers.on('clusterclick', function (a) {
+  const content = a.layer.getAllChildMarkers().map(m => {
+    const point = validPoints.find(p => p.name === m.options.title);
+    const description = point ? getDescription(point) : '';
+    return description;
+  }).join('');
+  document.getElementById('tab1-content').innerHTML = content;
+  openSidepanel();
+});
 
-// // Add tooltips to clusters
-// markers.on('clustermouseover', function (a) {
-// 	a.layer.bindTooltip(`${a.layer.getChildCount()} groups`).openTooltip();
-// });
+// Add tooltips to clusters
+markers.on('clustermouseover', function (a) {
+	a.layer.bindTooltip(`${a.layer.getChildCount()} groups`).openTooltip();
+});
