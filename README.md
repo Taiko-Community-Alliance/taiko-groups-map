@@ -2,6 +2,21 @@
 This project hosts the code and data used in the Taiko Groups map as seen on https://www.taikosource.org/.
 It uses data collected by the Taiko Community Alliance from user submisssions and various sources.
 
+## TODO
+### Basic
+
+ - [x] Project outline
+ - [x] Build scripts
+ - [ ] Get SidePanel bundled and basic functionality working
+ - [ ] Get Github Actions page publishing working
+ - [ ] Incorporate csv download into build process, remove json data from repo (and history)
+
+ ### Nice to Have
+ 
+ - [ ] Custom Map Markers
+ - [ ] Improve styles/UX for side panel
+ - [ ] Work out UI bugs with sidepanel/clicking
+
 ## Libraries Used
  - [Leaflet.js](https://github.com/Leaflet/Leaflet)
  - [Leaflet Map Clustering](https://github.com/Leaflet/Leaflet.markercluster)
