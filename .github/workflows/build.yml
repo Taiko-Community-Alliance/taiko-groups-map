@@ -21,7 +21,6 @@ jobs:
       name: github-pages
     outputs:
       artifact-path: ${{ steps.export.outputs.path }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -36,6 +35,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          TAIKO_GROUPS_DATA_CSV_URL: ${{ vars.TAIKO_GROUPS_DATA_CSV_URL }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
