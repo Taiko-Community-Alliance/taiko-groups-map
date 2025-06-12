@@ -1,7 +1,8 @@
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet.sidepanel';
-import points from './data.json';
+// See rollup-plugin-fetch-csv-json.js and fetch-csv-json.js
+import points from 'TAIKO_GROUPS_DATA_CSV_URL';
 import '@csstools/normalize.css/normalize.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
