@@ -27,7 +27,7 @@ const markers = L.markerClusterGroup({
 	zoomToBoundsOnClick: false
 });
 
-const validPoints = points.filter(({lat,lon,name}) => lat && lon && name);
+const validPoints = points.filter(({latitude,longitude,name}) => latitude && longitude && name);
 
 // generates an html description for a point, which possibly includes a website
 function getDescription(point) {
@@ -40,7 +40,7 @@ function getDescription(point) {
 }
 
 validPoints.forEach(function(point) {
-	var marker = L.marker([point.lat, L.Util.wrapNum(point.lon, [0,360], true)], {title: point.name}).bindTooltip(point.name);
+	var marker = L.marker([point.latitude, L.Util.wrapNum(point.longitude, [0,360], true)], {title: point.name}).bindTooltip(point.name);
 	marker.on('click', function() {
 		document.getElementById('tab1-content').innerHTML = getDescription(point);
 		openSidepanel();

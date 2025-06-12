@@ -32,7 +32,6 @@ module.exports = function remoteResolver() {
 
     async load(id) {
       if (id === 'TAIKO_GROUPS_DATA_CSV_URL') {
-        const url = id.slice(prefix.length);
         const data = await fetchCsvAsUrl(TAIKO_GROUPS_DATA_CSV_URL, mapPointsSchema);
         const code = 'export default ' + JSON.stringify(data);
         return code;
