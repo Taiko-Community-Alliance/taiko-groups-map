@@ -16,12 +16,14 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
  - [ ] Custom Map Markers
  - [ ] Improve styles/UX for side panel
  - [ ] Work out UI bugs with sidepanel/clicking
+ - [ ] Include group website
+ - [ ] Search-able
+ - [ ] Images from groups? Logos or photos?
 
 ## Libraries Used
  - [Leaflet.js](https://github.com/Leaflet/Leaflet)
  - [Leaflet Map Clustering](https://github.com/Leaflet/Leaflet.markercluster)
  - [Leaflet SidePanel](https://github.com/cyclingbyte/Leaflet.SidePanel)
- - [Leaflet RepeatedMarkers](https://gitlab.com/IvanSanchez/Leaflet.RepeatedMarkers) (nice to have, but not required)
 
 ## Build Workflow and Hosting
 The following flow chart outlines how the Taiko Groups Map is generated, built, and hosted on Taiko Source.
