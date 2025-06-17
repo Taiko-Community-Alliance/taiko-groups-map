@@ -20,9 +20,22 @@ const optionalString = (str) => {
   return str.trim();
 };
 
+const optionalUrl = (str) => {
+  if (str.trim() === '') {
+    return;
+  }
+  try {
+    const url = new URL(str.trim());
+    return url.toString();
+  } catch (error) {
+    throw new Error(`Invalid URL: ${str}`);
+  }
+};
+
 module.exports.schemaTypes = {
   nonEmptyString,
   optionalString,
+  optionalUrl,
   parseFloatThrow,
 }
 

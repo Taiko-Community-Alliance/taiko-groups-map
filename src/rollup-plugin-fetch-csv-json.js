@@ -12,9 +12,10 @@ const mapPointsSchema = {
   name: schemaTypes.nonEmptyString,
   city: schemaTypes.optionalString,
   state: schemaTypes.optionalString,
-  country: schemaTypes.nonEmptyString,
+  country: schemaTypes.optionalString,
   latitude: schemaTypes.parseFloatThrow,
   longitude: schemaTypes.parseFloatThrow,
+  website: schemaTypes.optionalUrl,
 }
 
 module.exports = function remoteResolver() {
