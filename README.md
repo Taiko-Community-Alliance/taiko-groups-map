@@ -13,7 +13,7 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
 
  ### Nice to Have
  
- - [ ] Include group website
+ - [x] Include group website
  - [ ] Regional markers/colors
  - [ ] Custom Map Markers
  - [ ] Improve styles/UX for side panel
