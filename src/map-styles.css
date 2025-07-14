@@ -13,3 +13,31 @@ body {
   display: block;
   height: 100%;
 }
+
+.marker-cluster-basic {
+  background-color: none;
+}
+.marker-cluster-basic div {
+  background-color: none;
+}
+
+.marker-cluster-count-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -9%);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    font-size: 17px;
+    white-space: nowrap;
+}
+
+.sidepanel-tab-content h3 {
+  margin-top: 2em;
+  margin-bottom: 0;
+}
+.sidepanel-tab-content p {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
