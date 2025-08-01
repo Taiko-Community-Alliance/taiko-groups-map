@@ -29,8 +29,21 @@ const sidepanel = L.control.sidepanel('panelID', {
 	startTab: 'tab-1'
 }).addTo(map);
 
-mapMarkerLayer.addEventListener('openSidepanel', function({content}) {
+// generates an html description for a point, which possibly includes a website
+function getDescription(point) {
+	var description = `<h3>${point.name}</h3><p>${[point.city, point.state, point.country].filter(Boolean).join(', ')}</p>`;
+	if (point.website) {
+		description += `<a href="${point.website}" target="_blank">${point.website}</a>`;
+	}
+	description += `</p>`;
+	return description;
+}
+
+mapMarkerLayer.addEventListener('active-points', function({points}) {
+
+	const content = points.map(point => getDescription(point)).join('');
 	document.getElementById('tab1-content').innerHTML = content;
+
 	const panel = document.getElementById('panelID');
 	if (!L.DomUtil.hasClass(panel, 'opened')) {
 		L.DomUtil.addClass(panel, 'opened');

@@ -46,16 +46,6 @@ export const initializeTaikoMap = (map, points) => {
     }
   });
 
-  // generates an html description for a point, which possibly includes a website
-  function getDescription(point) {
-    var description = `<h3>${point.name}</h3><p>${[point.city, point.state, point.country].filter(Boolean).join(', ')}</p>`;
-    if (point.website) {
-      description += `<a href="${point.website}" target="_blank">${point.website}</a>`;
-    }
-    description += `</p>`;
-    return description;
-  }
-
   const mitsuIcon = L.icon({
       iconUrl: 'images/marker-mitsu-icon-simple-2x.png',
       iconSize: [25, 25],
@@ -77,7 +67,7 @@ export const initializeTaikoMap = (map, points) => {
     }).bindTooltip(point.name);
     markerPointMap.set(marker, point);
     marker.on('click', function() {
-      markers.fire('openSidepanel', {content: getDescription(point)}); // Temporary
+      markers.fire('active-points', {points: [point]});
     });
     markers.addLayer(marker);
   });
@@ -88,13 +78,8 @@ export const initializeTaikoMap = (map, points) => {
   // Handle cluster click event
   markers.on('clusterclick', function (e) {
     e.sourceTarget.spiderfy();
-    const content = e.sourceTarget.getAllChildMarkers().map(m => {
-
-      const point = markerPointMap.get(m);
-      const description = point ? getDescription(point) : '';
-      return description;
-    }).join('');
-    markers.fire('openSidepanel', { content }); // Temporary
+    const points = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m));
+    markers.fire('active-points', { points: points });
   });
 
   // Add tooltips to clusters
