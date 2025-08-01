@@ -6,25 +6,15 @@ import points from 'TAIKO_GROUPS_DATA_CSV_URL';
 import '@csstools/normalize.css/normalize.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
-// import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.sidepanel/dist/leaflet.sidepanel.css';
 import './map-styles.css';
 
 var map = L.map('map').setView([37.7749, L.Util.wrapNum(-122.4194, [0,360], true)], 3); 
 
-//var myRepeatingMarkers = L.gridLayer.repeatedMarkers().addTo(map);
-
 // Add a tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
-
-// L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.jpg', {
-// 	minZoom: 1,
-// 	maxZoom: 16,
-// 	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-// 	ext: 'jpg'
-// }).addTo(map);
 
 const markerPointMap = new Map();
 
