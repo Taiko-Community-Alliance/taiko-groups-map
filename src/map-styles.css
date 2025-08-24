@@ -8,10 +8,16 @@ body {
 }
 
 #tab1-content {
-  padding-left: 10px;
+  padding: 10px 10px 0 10px;
+  display: block;
+  height: 100%;
+}
+
+.sidebar-list {
   overflow: scroll;
   display: block;
   height: 100%;
+  margin-right: -10px;
 }
 
 .marker-cluster-basic {
@@ -34,10 +40,38 @@ body {
 }
 
 .sidepanel-tab-content h3 {
-  margin-top: 2em;
+  margin-top: 0;
   margin-bottom: 0;
 }
 .sidepanel-tab-content p {
   margin-top: 0.2em;
   margin-bottom: 0.2em;
+}
+
+.search-input {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 10px;
+}
+
+.point-name-action {
+  cursor: pointer;
+}
+
+.marker-active {
+  filter: hue-rotate(165deg);
+}
+
+.point-entry {
+  margin-top: 1em
+}
+
+.point-entry.active {
+    background-color: #daedff;
+    border-left: 3px solid #2194fc;
+    padding-left: 3px;
+}
+
+.point-entry:not(.matchesFilter) {
+  opacity: 0.25;
 }

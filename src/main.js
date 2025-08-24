@@ -7,6 +7,8 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.sidepanel/dist/leaflet.sidepanel.css';
 import './map-styles.css';
 import { initializeTaikoMap } from './map';
+import { createSideBar } from './sidebar';
+import { reactive } from 'vue';
 
 // Create map
 const map = L.map('map').setView([37.7749, L.Util.wrapNum(-122.4194, [0,360], true)], 3); 
@@ -17,34 +19,44 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // exclude points without latitude, longitude, or name
-const validPoints = points.filter(({latitude,longitude,name}) => latitude && longitude && name);
-const mapMarkerLayer = initializeTaikoMap(map, validPoints);
+const rxPoints = reactive(points
+	.filter(({latitude,longitude,name}) => latitude && longitude && name)
+	.map((point, i) => ({
+		...point,
+		visible: true,
+		active: false,
+		index: i
+	})));
+	
+// Create a map marker layer
+const mapMarkerLayer = initializeTaikoMap(map, rxPoints);
 map.addLayer(mapMarkerLayer);
 
 // Side Panel Stuff
 
 // Initialize the side panel
-const sidepanel = L.control.sidepanel('panelID', {
-	panelPosition: 'left',
-	startTab: 'tab-1'
-}).addTo(map);
+const sideBar = createSideBar(map, rxPoints);
 
-// generates an html description for a point, which possibly includes a website
-function getDescription(point) {
-	var description = `<h3>${point.name}</h3><p>${[point.city, point.state, point.country].filter(Boolean).join(', ')}</p>`;
-	if (point.website) {
-		description += `<a href="${point.website}" target="_blank">${point.website}</a>`;
-	}
-	description += `</p>`;
-	return description;
-}
+mapMarkerLayer.addEventListener('visible-points', function({points, center}) {
+	rxPoints.forEach(p => {
+		p.visible = points.includes(p);
+	});
+	sideBar.center = center;
+});
+
+sideBar.$events.addEventListener('visit', (e) => {
+	mapMarkerLayer.fire('center-point', {
+		point: e.detail.point
+	});
+});
 
 mapMarkerLayer.addEventListener('active-points', function({points}) {
 
-	const content = points.map(point => getDescription(point)).join('');
-	document.getElementById('tab1-content').innerHTML = content;
+	rxPoints.forEach(p => {
+		p.active = points.includes(p);
+	});
 
-	const panel = document.getElementById('panelID');
+	const panel = document.getElementById('side-panel');
 	if (!L.DomUtil.hasClass(panel, 'opened')) {
 		L.DomUtil.addClass(panel, 'opened');
 		L.DomUtil.removeClass(panel, 'closed');

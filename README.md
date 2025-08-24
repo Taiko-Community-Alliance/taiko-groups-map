@@ -14,11 +14,11 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
  ### Nice to Have
  
  - [x] Include group website
+ - [x] Search-able
+ - [x] Improve styles/UX for side panel
+ - [x] Custom Map Markers
+ - [x] Work out UI bugs with sidepanel/clicking
  - [ ] Regional markers/colors
- - [ ] Custom Map Markers
- - [ ] Improve styles/UX for side panel
- - [ ] Work out UI bugs with sidepanel/clicking
- - [ ] Search-able
  - [ ] Images from groups? Logos or photos?
 
 ## Libraries Used

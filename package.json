@@ -21,6 +21,7 @@
     "@csstools/normalize.css": "^12.1.1",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-terser": "^0.4.4",
     "axios": "^1.9.0",
     "csvtojson": "^2.0.10",
@@ -30,6 +31,7 @@
     "leaflet.markercluster": "^1.5.3",
     "leaflet.sidepanel": "^1.2.2",
     "rollup": "^4.42.0",
-    "rollup-plugin-import-css": "^4.0.1"
+    "rollup-plugin-import-css": "^4.0.1",
+    "vue": "^3.5.18"
   }
 }
