@@ -1,10 +1,8 @@
 import L from 'leaflet';
-import 'leaflet.sidepanel';
 // See rollup-plugin-fetch-csv-json.js and fetch-csv-json.js
 import points from 'TAIKO_GROUPS_DATA_CSV_URL';
 import '@csstools/normalize.css/normalize.css';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet.sidepanel/dist/leaflet.sidepanel.css';
 import './map-styles.css';
 import { initializeTaikoMap } from './map';
 import { createSideBar } from './sidebar';

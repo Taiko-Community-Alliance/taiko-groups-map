@@ -1,3 +1,5 @@
+import 'leaflet.sidepanel';
+import 'leaflet.sidepanel/dist/leaflet.sidepanel.css';
 import { createApp, ref, computed, reactive } from 'vue/dist/vue.esm-bundler.js';
 import L from 'leaflet';
 import { haversine } from './util.js';
