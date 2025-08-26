@@ -18,6 +18,8 @@ It uses data collected by the Taiko Community Alliance from user submisssions an
  - [x] Improve styles/UX for side panel
  - [x] Custom Map Markers
  - [x] Work out UI bugs with sidepanel/clicking
+ - [ ] Show groups out of view at the bottom of list
+ - [ ] Include group contact info
  - [ ] Regional markers/colors
  - [ ] Images from groups? Logos or photos?
 
