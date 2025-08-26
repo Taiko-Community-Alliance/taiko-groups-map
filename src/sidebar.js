@@ -85,6 +85,14 @@ export const createSideBar = (map, points) => {
     }
   };
   
+  if (window.innerWidth >= 1024) { // assuming desktop is width >= 1024px
+    const panel = document.getElementById('side-panel');
+    if (!L.DomUtil.hasClass(panel, 'opened')) {
+      L.DomUtil.addClass(panel, 'opened');
+      L.DomUtil.removeClass(panel, 'closed');
+    }
+  }
+
   const app = createApp(SidePanelApp);
   const vm = app.mount('#vue-sidepanel-app');
   vm.$events = emitter;
