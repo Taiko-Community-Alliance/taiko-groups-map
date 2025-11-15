@@ -16,10 +16,7 @@ export const createSideBar = (map, points) => {
     template: `
       <div>
         <input v-model="filter" placeholder="Search..." class="search-input" />
-        <div v-if="invisibleMatches > 0 && filter" class="info-message">
-          {{ invisibleMatches }} matching result<span v-if="invisibleMatches > 1">s</span> hidden from view.
-        </div>
-        <div class="sidebar-list" v-if="visiblePoints.length">
+        <div class="sidebar-list">
           <div
             v-for="point in visiblePoints"
             :key="point.index"
@@ -27,13 +24,26 @@ export const createSideBar = (map, points) => {
             :class="{ active: point.active, matchesFilter: point.matchesFilter }"
           >
             <h3 class="point-name-action" @click="emitVisit(point)">{{ point.name }}</h3>
-            <p>{{ [point.city, point.state, point.country].filter(Boolean).join(', ') }}</p>
+            <p>{{ [point.city, point.state, point.province, point.country].filter(Boolean).join(', ') }}</p>
+            <p v-if="point.website">
+              <a :href="point.website" target="_blank">{{ point.website }}</a>
+            </p>
+          </div>
+          <p v-if="!visiblePoints.length">No matching groups found.</p>
+          <h4 v-if="invisiblePoints.length">Results out of view</h4>
+          <div
+            v-for="point in invisiblePoints"
+            :key="point.index"
+            class="point-entry out-of-view"
+            :class="{ active: point.active, matchesFilter: point.matchesFilter }"
+          >
+            <h3 class="point-name-action" @click="emitVisit(point)">{{ point.name }}</h3>
+            <p>{{ [point.city, point.state,  point.province, point.country].filter(Boolean).join(', ') }}</p>
             <p v-if="point.website">
               <a :href="point.website" target="_blank">{{ point.website }}</a>
             </p>
           </div>
         </div>
-        <p v-else>No matching groups found.</p>
       </div>
     `,
     setup() {
@@ -46,9 +56,10 @@ export const createSideBar = (map, points) => {
         return points
           .map(p => {
             const matchesFilter = p.name.toLowerCase().includes(f) ||
-            (p.city && p.city.toLowerCase().includes(f)) ||
-            (p.state && p.state.toLowerCase().includes(f)) ||
-            (p.country && p.country.toLowerCase().includes(f))
+              (p.city && p.city.toLowerCase().includes(f)) ||
+              (p.state && p.state.toLowerCase().includes(f)) ||
+              (p.province && p.province.toLowerCase().includes(f)) ||
+              (p.country && p.country.toLowerCase().includes(f));
             return {
               ...p,
               distanceFromCenter: haversine(map.getCenter().lat, map.getCenter().lng, p.latitude, p.longitude),
@@ -57,18 +68,16 @@ export const createSideBar = (map, points) => {
           })
           .sort((a, b) => {
             return b.matchesFilter - a.matchesFilter ||
-            Math.sign(a.distanceFromCenter - b.distanceFromCenter) || b.active - a.active;
+              Math.sign(a.distanceFromCenter - b.distanceFromCenter) || b.active - a.active;
           });
       });
       const visiblePoints = computed(() => {
-        return searchSortedFilteredPoints.value
-          .filter(p => p.visible || p.active)
+        return searchSortedFilteredPoints.value.filter(p => p.visible);
+      });
+      const invisiblePoints = computed(() => {
+        return searchSortedFilteredPoints.value.filter(p => !p.visible);
       });
 
-      const invisibleMatches = computed(() => {
-        return searchSortedFilteredPoints.value.filter(point => point.matchesFilter && !visiblePoints.value.includes(point)).length;
-      });
-  
       const center = reactive({
         latitude: map.getCenter().lat,
         longitude: L.Util.wrapNum(map.getCenter().lng, [0, 360], true)
@@ -78,14 +87,14 @@ export const createSideBar = (map, points) => {
         points,
         filter,
         visiblePoints,
+        invisiblePoints,
         center,
         emitVisit,
-        invisibleMatches
       };
     }
   };
-  
-  if (window.innerWidth >= 1024) { // assuming desktop is width >= 1024px
+
+  if (window.innerWidth >= 1024) {
     const panel = document.getElementById('side-panel');
     if (!L.DomUtil.hasClass(panel, 'opened')) {
       L.DomUtil.addClass(panel, 'opened');

@@ -9,7 +9,8 @@ module.exports = {
   input: "src/main.js",
   output: {
     file: "dist/bundle.js",
-    format: "iife", // suitable for <script> tag
+    format: "umd",
+    name: 'InteractiveTaikoMap',
     sourcemap: false,
   },
   plugins: [

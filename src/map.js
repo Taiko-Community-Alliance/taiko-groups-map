@@ -10,9 +10,13 @@ function debounce(fn, delay) {
   };
 }
 
-export const initializeTaikoMap = (map, points) => {
+export const initializeTaikoMap = (map, points, options = {}) => {
   const markerPointMap = new Map();
   const pointmarkerMap = new Map();
+
+  const {
+    images
+  } = options;
   
   // // Initialize the marker cluster group
   const markers = L.markerClusterGroup({
@@ -29,7 +33,7 @@ export const initializeTaikoMap = (map, points) => {
     iconCreateFunction: function(cluster) {
       const markers = cluster.getAllChildMarkers();
       const cities = Array.from(new Set(markers.map(m => markerPointMap.get(m)?.city).filter(Boolean)));
-      const states = Array.from(new Set(markers.map(m => markerPointMap.get(m)?.state).filter(Boolean)));
+      const states = Array.from(new Set(markers.map(m => markerPointMap.get(m)?.state || markerPointMap.get(m)?.province).filter(Boolean)));
       cluster.cities = cities;
       cluster.states = states;
       var childCount = cluster.getChildCount();
@@ -38,7 +42,7 @@ export const initializeTaikoMap = (map, points) => {
         className: 'marker-cluster-basic',
         html: `
           <div style="position: relative; text-align: center;">
-            <img src="images/marker-mitsu-icon-cluster-2x.png" class="" title="${cities}" alt="Marker" tabindex="0" style="width: 25px; height: 41px;">
+            <img src="${images.markerClusterIcon}" class="" title="${cities}" alt="Marker" tabindex="0" style="width: 25px; height: 41px;">
             <div class="marker-cluster-count-text">
               ${childCount}
             </div>
@@ -48,7 +52,7 @@ export const initializeTaikoMap = (map, points) => {
         iconAnchor: [12, 41], // anchor the bottom point of the icon to the coordinates
 
         tooltipAnchor: [20, 50],
-        shadowUrl: 'images/marker-shadow.png',
+        shadowUrl: images.shadow,
         shadowSize: [41, 41],
         shadowAnchor: [13, 40]
       });
@@ -56,11 +60,11 @@ export const initializeTaikoMap = (map, points) => {
   });
 
   const mitsuIcon = L.icon({
-      iconUrl: 'images/marker-mitsu-icon-simple-2x.png',
+      iconUrl: images.markerIcon,
       iconSize: [25, 25],
       iconAnchor: [12, 12],
       tooltipAnchor: [20, 0],
-      // shadowUrl: 'images/marker-shadow.png',
+      // shadowUrl: images.shadow,
       // shadowSize: [41, 41],
       // shadowAnchor: [13, 40]
   });
