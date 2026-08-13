@@ -1,0 +1,34 @@
+# Code Owners for Taiko Groups Map
+# This file specifies who should review changes to different parts of the codebase
+
+# Default owner for all files
+* @Taiko-Community-Alliance/taiko-groups-map-maintainers @hanbini96
+
+# Specific file patterns and their owners
+
+# Frontend source code
+src/* @Taiko-Community-Alliance/taiko-groups-map-maintainers @hanbini96
+
+# Configuration files
+rollup.config.js @Taiko-Community-Alliance/taiko-groups-map-maintainers
+package.json @Taiko-Community-Alliance/taiko-groups-map-maintainers
+package-lock.json @Taiko-Community-Alliance/taiko-groups-map-maintainers
+
+# Public assets
+public/* @Taiko-Community-Alliance/taiko-groups-map-maintainers
+
+# Documentation
+README.md @Taiko-Community-Alliance/taiko-groups-map-maintainers
+
+# GitHub configuration
+.github/* @Taiko-Community-Alliance/taiko-groups-map-maintainers
+.github/workflows/* @Taiko-Community-Alliance/taiko-groups-map-maintainers
+.github/ISSUE_TEMPLATE/* @Taiko-Community-Alliance/taiko-groups-map-maintainers
+
+# Configuration files
+.gitignore @Taiko-Community-Alliance/taiko-groups-map-maintainers
+CODEOWNERS @Taiko-Community-Alliance/taiko-groups-map-maintainers
+.env.template @Taiko-Community-Alliance/taiko-groups-map-maintainers
+
+# Ensure all pull requests get reviewed by maintainers
+# This is enforced by branch protection rules

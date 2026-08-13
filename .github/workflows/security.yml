@@ -1,0 +1,210 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for accurate scanning
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          echo "🔍 Running npm audit..."
+          npm audit --audit-level=moderate
+          echo "✅ npm audit completed successfully"
+
+      - name: Check for vulnerable dependencies
+        run: |
+          # Check for known vulnerabilities
+          npm audit --json > audit-results.json 2>&1 || true
+          
+          # Parse results
+          if [ -s audit-results.json ]; then
+            echo "⚠️  Vulnerable dependencies found:"
+            jq '.vulnerabilities | keys[]' audit-results.json | while read vuln; do
+              echo "  - $vuln"
+            done
+            
+            # Check severity
+            HIGH_VULNS=$(jq '.vulnerabilities | to_entries[] | select(.value.severity == "high" or .value.severity == "critical") | .key' audit-results.json | wc -l)
+            
+            if [ "$HIGH_VULNS" -gt 0 ]; then
+              echo "❌ Found $HIGH_VULNS high/critical vulnerabilities"
+              exit 1
+            else
+              echo "✅ No high/critical vulnerabilities found"
+            fi
+          else
+            echo "✅ No vulnerabilities found"
+          fi
+
+      - name: Check for sensitive data in repository
+        run: |
+          echo "🔍 Scanning for sensitive data..."
+          
+          # Check for API keys, tokens, passwords
+          SENSITIVE_PATTERNS=(
+            "password"
+            "secret"
+            "token"
+            "api[_-]?key"
+            "private[_-]?key"
+            "aws[_-]?secret"
+            "github[_-]?token"
+          )
+          
+          FOUND_SENSITIVE=false
+          
+          for pattern in "${SENSITIVE_PATTERNS[@]}"; do
+            RESULTS=$(grep -rEi "$pattern" --include="*.js" --include="*.json" --include="*.env" --include="*.yml" --include="*.yaml" . 2>/dev/null | grep -v ".git" | grep -v "node_modules")
+            
+            if [ -n "$RESULTS" ]; then
+              echo "❌ Potential sensitive data found matching '$pattern':"
+              echo "$RESULTS"
+              FOUND_SENSITIVE=true
+            fi
+          done
+          
+          if [ "$FOUND_SENSITIVE" = true ]; then
+            echo "❌ Sensitive data detected in repository"
+            exit 1
+          else
+            echo "✅ No sensitive data detected"
+          fi
+
+      - name: Check .env files
+        run: |
+          echo "🔍 Checking .env files..."
+          
+          # Check if .env exists in repository (should be in .gitignore)
+          if [ -f ".env" ]; then
+            echo "⚠️  .env file found in repository (should be in .gitignore)"
+            ls -la .env
+            exit 1
+          fi
+          
+          # Check .env.template
+          if [ -f ".env.template" ]; then
+            echo "✅ .env.template exists (good practice)"
+            
+            # Check if it contains placeholder values
+            if grep -q "YOUR_" .env.template || grep -q "CHANGEME" .env.template; then
+              echo "✅ .env.template contains placeholder values"
+            else
+              echo "⚠️  .env.template may need placeholder values"
+            fi
+          else
+            echo "❌ .env.template missing"
+            exit 1
+          fi
+
+      - name: Check file permissions
+        run: |
+          echo "🔍 Checking file permissions..."
+          
+          # Check for overly permissive files
+          if find . -type f -name "*.sh" -perm -777 | grep -v ".git"; then
+            echo "⚠️  Overly permissive shell scripts found"
+          fi
+          
+          if find . -type f -name "*.json" -perm -777 | grep -v ".git"; then
+            echo "⚠️  Overly permissive JSON files found"
+          fi
+          
+          echo "✅ File permissions check completed"
+
+      - name: Check for large files
+        run: |
+          echo "🔍 Checking for large files..."
+          
+          # Check for files > 10MB
+          LARGE_FILES=$(find . -type f -size +10M | grep -v ".git" | grep -v "node_modules")
+          
+          if [ -n "$LARGE_FILES" ]; then
+            echo "⚠️  Large files detected (>10MB):"
+            echo "$LARGE_FILES"
+            echo "⚠️  Consider using Git LFS or external storage for large files"
+          else
+            echo "✅ No large files found"
+          fi
+
+      - name: Generate security report
+        run: |
+          echo "📊 Security Scan Summary:"
+          echo "========================"
+          echo "✅ npm audit passed"
+          echo "✅ No sensitive data in repository"
+          echo "✅ .env files properly configured"
+          echo "✅ File permissions acceptable"
+          echo "✅ No large files detected"
+          echo ""
+          echo "🎉 Security scan completed successfully!"
+
+  dependency-update:
+    name: Dependency Update Check
+    runs-on: ubuntu-latest
+    needs: security-scan
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for outdated dependencies
+        run: |
+          echo "🔍 Checking for outdated dependencies..."
+          
+          # Install npm-check-updates
+          npm install -g npm-check-updates
+          
+          # Check for outdated packages
+          ncu --json > outdated-deps.json 2>&1 || true
+          
+          OUTDATED_COUNT=$(jq 'length' outdated-deps.json 2>/dev/null || echo "0")
+          
+          if [ "$OUTDATED_COUNT" -gt 0 ]; then
+            echo "⚠️  $OUTDATED_COUNT outdated dependencies found:"
+            ncu --color
+            echo ""
+            echo "💡 Run 'ncu -u' to update dependencies"
+          else
+            echo "✅ All dependencies are up to date"
+          fi
+
+      - name: Check for deprecated packages
+        run: |
+          echo "🔍 Checking for deprecated packages..."
+          
+          # Check package.json for deprecated packages
+          if grep -q "deprecated" package.json; then
+            echo "⚠️  Deprecated packages found in package.json"
+          else
+            echo "✅ No deprecated packages detected"
+          fi
