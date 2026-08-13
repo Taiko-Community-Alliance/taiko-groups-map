@@ -1,0 +1,148 @@
+# Dependabot Configuration for Taiko Groups Map
+# Automatically updates dependencies to keep them secure and up-to-date
+
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"  # Check for updates daily
+      time: "06:00"      # Run at 6 AM UTC
+      timezone: "UTC"
+    open-pull-requests-limit: 10  # Maximum 10 open PRs at once
+    reviewers:
+      - hanbini96
+      - Taiko-Community-Alliance/taiko-groups-map-maintainers
+    assignees:
+      - hanbini96
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    milestone: 1
+    pull-request-branch-name:
+      separator: "-"
+    target-branch: "main"
+    versioning-strategy: "auto"  # Automatically determine version updates
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"  # Check for updates weekly
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - hanbini96
+      - Taiko-Community-Alliance/taiko-groups-map-maintainers
+    assignees:
+      - hanbini96
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+    milestone: 1
+    pull-request-branch-name:
+      separator: "-"
+    target-branch: "main"
+
+  # Enable version updates for Docker (if used in future)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - hanbini96
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"
+
+# Configuration options
+registries:
+  # Configure private registries if needed
+  # npm-registry:
+  #   type: npm-registry
+  #   url: https://registry.npmjs.org
+  #   token: ${{secrets.NPM_TOKEN}}
+
+# Advanced options
+# reviewers:
+#   - user1
+#   - user2
+# assignees:
+#   - user1
+# labels:
+#   - "dependencies"
+# milestone: 1
+# milestone-title: "Dependency Updates"
+# commit-message:
+#   prefix: "chore"
+#   prefix-development: "chore"
+#   include: "scope"
+
+# Exclude specific dependencies from updates
+# ignore:
+#   - dependency-name: "lodash"
+#     versions: ["4.x"]  # Don't update lodash to v5 yet
+#   - dependency-name: "react"
+#     update-types: ["version-update:semver-major"]  # Don't update major versions of react
+
+# Reviewers for each package ecosystem
+reviewers:
+  npm:
+    - hanbini96
+    - Taiko-Community-Alliance/taiko-groups-map-maintainers
+  github-actions:
+    - hanbini96
+    - Taiko-Community-Alliance/taiko-groups-map-maintainers
+  docker:
+    - hanbini96
+
+# Groups for batch updates
+# groups:
+#   production-dependencies:
+#     dependency-type: "production"
+#     update-types:
+#       - "minor"
+#       - "patch"
+#   development-dependencies:
+#     dependency-type: "development"
+#     update-types:
+#       - "minor"
+#       - "patch"
+
+# Enable automerge for patch and minor updates (if enabled in repo settings)
+# automerge: true
+
+# Configuration for security updates
+# security-updates-only: false  # Set to true to only get security updates
+
+# Configuration for versioning strategy
+# versioning-strategy: "auto"  # auto, lockfile-only, increase, increase-if-possible, widen
+
+# Configuration for dependency type filtering
+# allow:
+#   - dependency-name: "express"
+#     dependency-type: "direct"
+# deny:
+#   - dependency-name: "some-vulnerable-package"
+#     dependency-type: "indirect"
+
+# Configuration for open PR limit
+# open-pull-requests-limit: 10
+
+# Configuration for pull request creation
+# pull-request-branch-name:
+#   separator: "-"
+# target-branch: "main"

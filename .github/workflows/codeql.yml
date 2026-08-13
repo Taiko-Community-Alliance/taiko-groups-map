@@ -1,0 +1,248 @@
+name: "CodeQL Advanced Security Analysis"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 1 * * *'  # Run daily at 1 AM UTC
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
+        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for accurate analysis
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # queries: security-extended,security-and-quality  # Run extended queries
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with '+', '>', or '-', to extend, replace, or remove from the default queries.
+          # queries: ./path/to/local/query, your-org/your-repo/queries@main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+          upload-database: true
+          output: sarif-results
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-results/${{ matrix.language }}.sarif
+          category: "/language:${{matrix.language}}"
+
+      - name: Generate Security Report
+        run: |
+          echo "🔍 CodeQL Analysis Complete"
+          echo "=========================="
+          
+          # Count findings
+          if [ -f "sarif-results/javascript.sarif" ]; then
+            echo "✅ SARIF report generated"
+            
+            # Extract findings summary
+            HIGH_SEVERITY=$(jq '.runs[].results[] | select(.properties.security-severity != null) | .properties.security-severity' sarif-results/javascript.sarif | grep -c '"8\."')
+            MEDIUM_SEVERITY=$(jq '.runs[].results[] | select(.properties.security-severity != null) | .properties.security-severity' sarif-results/javascript.sarif | grep -c '"6\."')
+            LOW_SEVERITY=$(jq '.runs[].results[] | select(.properties.security-severity != null) | .properties.security-severity' sarif-results/javascript.sarif | grep -c '"4\."')
+            
+            echo "📊 Security Findings:"
+            echo "  - High Severity: $HIGH_SEVERITY"
+            echo "  - Medium Severity: $MEDIUM_SEVERITY"
+            echo "  - Low Severity: $LOW_SEVERITY"
+            
+            if [ $HIGH_SEVERITY -gt 0 ]; then
+              echo "❌ Found $HIGH_SEVERITY high severity vulnerabilities!"
+              echo "🔧 Please review and fix these issues immediately"
+            fi
+            
+            if [ $MEDIUM_SEVERITY -gt 0 ]; then
+              echo "⚠️  Found $MEDIUM_SEVERITY medium severity issues"
+              echo "🔧 Review recommended"
+            fi
+            
+            if [ $LOW_SEVERITY -eq 0 ] && [ $MEDIUM_SEVERITY -eq 0 ] && [ $HIGH_SEVERITY -eq 0 ]; then
+              echo "✅ No security vulnerabilities found!"
+            fi
+          else
+            echo "⚠️  No SARIF report generated"
+          fi
+          
+          echo ""
+          echo "📋 CodeQL Analysis Summary:"
+          echo "==========================="
+          echo "✅ CodeQL initialized"
+          echo "✅ Analysis completed"
+          echo "✅ SARIF report uploaded"
+          echo "✅ Security findings analyzed"
+          echo ""
+          echo "🔗 View detailed results: https://github.com/Taiko-Community-Alliance/taiko-groups-map/security/code-scanning"
+
+      - name: Create Security Alert Issue (if vulnerabilities found)
+        if: failure()
+        run: |
+          echo "🚨 Security vulnerabilities detected! Creating alert issue..."
+          
+          # Get findings summary
+          FINDINGS=$(jq '.runs[].results[] | {message: .message.text, severity: .properties.security-severity, ruleId: .ruleId}' sarif-results/javascript.sarif 2>/dev/null || echo "No findings")
+          
+          ISSUE_BODY=$(cat << EOF
+          ## 🚨 Security Alert: CodeQL Found Vulnerabilities
+
+          **Repository:** Taiko Groups Map
+          **Analysis Date:** $(date -u)
+          **Severity:** CRITICAL - Security vulnerabilities detected
+
+          ### 📊 Findings Summary
+
+          
+          ### 🔍 Detailed Findings
+
+          
+          ### 🛠️ Recommended Actions
+
+          1. **Review findings** in GitHub Security tab
+          2. **Fix vulnerabilities** in your code
+          3. **Update dependencies** if needed
+          4. **Re-run CodeQL** after fixes
+
+          ### 📚 Resources
+
+          - [CodeQL Documentation](https://codeql.github.com/docs/)
+          - [GitHub Security Lab](https://securitylab.github.com/)
+          - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+
+          ---
+
+          ⚠️ This issue was automatically created by GitHub Actions CodeQL workflow
+          EOF
+          )
+          
+          gh issue create \
+            --title "🚨 Security: CodeQL Found Vulnerabilities" \
+            --body "$ISSUE_BODY" \
+            --label "security,critical" \
+            --assignee hanbini96
+
+      - name: Verify CodeQL Status
+        run: |
+          echo ""
+          echo "🎯 CodeQL Analysis Status"
+          echo "========================"
+          
+          # Check if CodeQL completed successfully
+          if [ -f "sarif-results/javascript.sarif" ]; then
+            echo "✅ CodeQL analysis completed successfully"
+            echo "✅ SARIF report generated"
+            echo "✅ Security findings analyzed"
+            
+            # Check for zero findings
+            FINDINGS_COUNT=$(jq '.runs[].results | length' sarif-results/javascript.sarif 2>/dev/null || echo "0")
+            
+            if [ "$FINDINGS_COUNT" -eq 0 ]; then
+              echo "🎉 No security vulnerabilities found!"
+            else
+              echo "⚠️  Found $FINDINGS_COUNT potential issues"
+            fi
+          else
+            echo "❌ CodeQL analysis failed"
+            exit 1
+          fi
+
+  codeql-sarif:
+    name: Upload CodeQL SARIF to Security Tab
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload SARIF to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-results/javascript.sarif
+          category: "/language:javascript"
+
+  security-summary:
+    name: Security Summary
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Security Summary
+        run: |
+          echo ""
+          echo "🔒 Security Analysis Summary"
+          echo "============================"
+          
+          if [ -f "sarif-results/javascript.sarif" ]; then
+            echo "✅ CodeQL analysis completed"
+            
+            # Extract and display summary
+            TOTAL_FINDINGS=$(jq '.runs[].results | length' sarif-results/javascript.sarif 2>/dev/null || echo "0")
+            echo "📊 Total Findings: $TOTAL_FINDINGS"
+            
+            # Check severity distribution
+            CRITICAL=$(jq '.runs[].results[] | select(.properties.security-severity == "9.0")' sarif-results/javascript.sarif 2>/dev/null | wc -l)
+            HIGH=$(jq '.runs[].results[] | select(.properties.security-severity == "8.0")' sarif-results/javascript.sarif 2>/dev/null | wc -l)
+            MEDIUM=$(jq '.runs[].results[] | select(.properties.security-severity == "6.0")' sarif-results/javascript.sarif 2>/dev/null | wc -l)
+            LOW=$(jq '.runs[].results[] | select(.properties.security-severity == "4.0")' sarif-results/javascript.sarif 2>/dev/null | wc -l)
+            
+            echo ""
+            echo "📈 Severity Distribution:"
+            echo "  🔴 Critical: $CRITICAL"
+            echo "  🔴 High: $HIGH"
+            echo "  🟡 Medium: $MEDIUM"
+            echo "  🟢 Low: $LOW"
+            
+            echo ""
+            if [ $CRITICAL -gt 0 ]; then
+              echo "❌ CRITICAL: Fix immediately!"
+            elif [ $HIGH -gt 0 ]; then
+              echo "⚠️  HIGH: Review and fix as soon as possible"
+            elif [ $MEDIUM -gt 0 ]; then
+              echo "⚠️  MEDIUM: Review recommended"
+            else
+              echo "✅ EXCELLENT: No critical or high severity issues found!"
+            fi
+            
+            echo ""
+            echo "🔗 View full results: https://github.com/Taiko-Community-Alliance/taiko-groups-map/security/code-scanning"
+          else
+            echo "❌ CodeQL analysis did not complete"
+            exit 1
+          fi

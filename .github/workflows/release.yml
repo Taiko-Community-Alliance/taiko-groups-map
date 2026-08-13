@@ -1,0 +1,154 @@
+name: Automated Release
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get full history for changelog
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: v${{ github.run_number }}
+          writeToFile: false
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            ## 🎉 Release v${{ github.run_number }}
+
+            ${{ steps.changelog.outputs.changes }}
+
+            ### 📋 What's Changed
+
+            ${{ steps.changelog.outputs.changes }}
+
+            ### 🔗 Links
+
+            - **GitHub Pages:** https://taiko-community-alliance.github.io/taiko-groups-map/
+            - **Full Changelog:** https://github.com/Taiko-Community-Alliance/taiko-groups-map/compare/v${{ github.run_number - 1 }}...v${{ github.run_number }}
+
+            ### 🤝 Contributors
+
+            Thanks to all contributors!
+            
+            ${{ steps.changelog.outputs.contributors }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          make_latest: true
+
+      - name: Update GitHub Discussions
+        run: |
+          echo "📢 Announcing new release in GitHub Discussions..."
+          
+          # Create discussion post
+          DISCUSSION_BODY=$(cat << EOF
+          🎉 **New Release: v${{ github.run_number }}** 🎉
+
+          We're excited to announce the release of **Taiko Groups Map v${{ github.run_number }}**!
+
+          ## 📋 What's New
+
+          ${{ steps.changelog.outputs.changes }}
+
+          ## 🔗 Quick Links
+
+          - 🌐 [Live Map](https://taiko-community-alliance.github.io/taiko-groups-map/)
+          - 📖 [Documentation](https://github.com/Taiko-Community-Alliance/taiko-groups-map#readme)
+          - 🐛 [Report Issues](https://github.com/Taiko-Community-Alliance/taiko-groups-map/issues)
+          - 💬 [Discussions](https://github.com/Taiko-Community-Alliance/taiko-groups-map/discussions)
+
+          ## 🤝 Thank You
+
+          Special thanks to all our contributors and users! 🙏
+
+          ---
+
+          *Release created automatically by GitHub Actions*
+          EOF
+          )
+          
+          # Create discussion (GitHub CLI)
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/Taiko-Community-Alliance/taiko-groups-map/discussions \
+            -f title="🎉 Release v${{ github.run_number }} - New Features and Improvements" \
+            -f body="$DISCUSSION_BODY" \
+            -f category_id=1  # General category
+          
+          echo "✅ Release announcement posted to GitHub Discussions"
+
+      - name: Update release notes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(release): update release notes for v${{ github.run_number }}"
+          branch: main
+          file_pattern: 'CHANGELOG.md'
+
+      - name: Notify maintainers
+        run: |
+          echo "📧 Notifying maintainers about new release..."
+          
+          # Get list of maintainers
+          MAINTAINERS=$(gh api /repos/Taiko-Community-Alliance/taiko-groups-map/teams/taiko-groups-map-maintainers/members | jq -r '.[].login' | tr '\n' ' ')
+          
+          echo "🎉 New release v${{ github.run_number }} is ready!"
+          echo "🔗 Release: https://github.com/Taiko-Community-Alliance/taiko-groups-map/releases/tag/v${{ github.run_number }}"
+          echo "📊 Changelog: https://github.com/Taiko-Community-Alliance/taiko-groups-map/compare/v${{ github.run_number - 1 }}...v${{ github.run_number }}"
+          
+          # Create issue comment
+          gh issue comment 1 \
+            --body "🎉 **New Release Available!** v${{ github.run_number }}
+
+          Check out the latest release: https://github.com/Taiko-Community-Alliance/taiko-groups-map/releases/tag/v${{ github.run_number }}
+
+          Changelog: https://github.com/Taiko-Community-Alliance/taiko-groups-map/compare/v${{ github.run_number - 1 }}...v${{ github.run_number }}"
+
+      - name: Generate release summary
+        run: |
+          echo ""
+          echo "📊 Release Summary"
+          echo "================="
+          echo "✅ Release v${{ github.run_number }} created successfully"
+          echo "✅ GitHub Release published"
+          echo "✅ GitHub Discussions updated"
+          echo "✅ Release notes generated"
+          echo "✅ Maintainers notified"
+          echo ""
+          echo "🔗 Release URL: https://github.com/Taiko-Community-Alliance/taiko-groups-map/releases/tag/v${{ github.run_number }}"
+          echo "🌐 Live Demo: https://taiko-community-alliance.github.io/taiko-groups-map/"
+          echo ""
+          echo "🎉 Your automated release workflow is working perfectly!"

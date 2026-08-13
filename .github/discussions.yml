@@ -1,0 +1,70 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for starting a discussion! 🎉
+        
+        Please fill out the template below to help the community understand your question or topic.
+        
+        ---
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to ask or discuss?
+      placeholder: Ask your question about Taiko Groups Map here...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any additional information that might help answer your question
+      placeholder: |
+        - What have you tried so far?
+        - Are you working on a specific project?
+        - Any screenshots or links to share?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Select the most relevant category
+      options:
+        - General Question
+        - How Do I?
+        - Bug Report (use Issues for bugs)
+        - Feature Request (use Issues for features)
+        - Show and Tell
+        - Announcements
+        - Q&A
+    validations:
+      required: true
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources
+      description: Links to relevant documentation, code, or other resources
+      placeholder: https://taiko-community-alliance.github.io/taiko-groups-map/
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgments
+    attributes:
+      label: Important Notes
+      description: Please read and check these boxes
+      options:
+        - label: I have searched existing discussions and issues
+          required: true
+        - label: I have read the [README](https://github.com/Taiko-Community-Alliance/taiko-groups-map#readme)
+          required: true
+        - label: I have checked the [documentation](https://github.com/Taiko-Community-Alliance/taiko-groups-map/wiki)
+          required: true
+        - label: This is not a bug report (use Issues for bugs)
+          required: true
