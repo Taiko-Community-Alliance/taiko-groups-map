@@ -9,7 +9,12 @@ import { createSideBar } from './sidebar';
 import { reactive } from 'vue';
 
 // Create map
-const map = L.map('map').setView([37.7749, L.Util.wrapNum(-122.4194, [0,360], true)], 3); 
+const map = L.map('map')
+	// Initial view of the map
+	.setView([
+		37.7749,
+		L.Util.wrapNum(-122.4194, [0,360], true)]
+	, 3); // Zoom level 
 
 // Add a main tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
