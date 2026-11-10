@@ -19,8 +19,8 @@ const map = L.map('map')
 
 //var myRepeatingMarkers = L.gridLayer.repeatedMarkers().addTo(map);
 function normalizeLongitudes(geojson) {
-  geojson.features.forEach(f => {
-    const coords = f.geometry.coordinates;
+  geojson.features.forEach(feature => {
+    const coords = feature.geometry.coordinates;
 
     function fixCoordArray(arr) {
       arr.forEach(pt => {
@@ -50,7 +50,7 @@ const geojsonLayer = L.geoJSON(normalizeLongitudes(regionLayers), {
 		stroke: false,
 	}),
 	onEachFeature: (feat, layer) =>
-		layer.bindPopup(`<strong>${feat.properties.NAME}</strong>`)
+		layer.bindPopup(`<strong>${feat.properties.name}</strong>`)
 }).addTo(map);
 
 map.fitBounds(geojsonLayer.getBounds());
