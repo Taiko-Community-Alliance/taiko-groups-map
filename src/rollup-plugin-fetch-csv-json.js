@@ -1,4 +1,5 @@
 require('dotenv').config();
+const {determineRegion} = require('./region-process');
 
 const TAIKO_GROUPS_DATA_CSV_URL = process.env.TAIKO_GROUPS_DATA_CSV_URL;
 
@@ -34,7 +35,12 @@ module.exports = function remoteResolver() {
     async load(id) {
       if (id === 'TAIKO_GROUPS_DATA_CSV_URL') {
         const data = await fetchCsvAsUrl(TAIKO_GROUPS_DATA_CSV_URL, mapPointsSchema);
-        const code = 'export default ' + JSON.stringify(data);
+        // Pre-calculate regions
+        const dataWithRegions = data.map((marker) => ({
+          ...marker,
+          region: determineRegion([marker.longitude, marker.latitude])?.[0]
+        }))
+        const code = 'export default ' + JSON.stringify(dataWithRegions);
         return code;
       }
       return null;
