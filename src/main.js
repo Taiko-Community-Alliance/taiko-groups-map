@@ -60,6 +60,13 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+
+// 51 is a magic longitude for us to mark as the edge of our map
+// Ideally we want all markers to repeat around the globe
+// But until that's fixed, we want to make sure europe (around long 0)
+// isn't broken up (causing user to pan all the way east and west to see groups in Europe)
+const LONG_WRAP = [51,360+51];
+
 // exclude points without latitude, longitude, or name
 const rxPoints = reactive(points
 	.filter(({latitude,longitude,name}) => latitude && longitude && name)
@@ -67,7 +74,8 @@ const rxPoints = reactive(points
 		...point,
 		visible: true,
 		active: false,
-		index: i
+		index: i,
+		longitude: L.Util.wrapNum(point.longitude, LONG_WRAP, true)
 	})));
 	
 // Create a map marker layer
