@@ -9,6 +9,15 @@ const parseFloatThrow = (str) => {
   return fl;
 };
 
+const optionalYear = (str) => {
+  if(!/\d{4}/.test(str)) return;
+  const year = parseInt(str);
+  if(isNaN(year)) {
+    return;
+  }
+  return year;
+};
+
 const nonEmptyString = (str) => {
   if (str.trim() === '') {
     throw new Error(`String cannot be empty`);
@@ -37,6 +46,7 @@ module.exports.schemaTypes = {
   optionalString,
   optionalUrl,
   parseFloatThrow,
+  optionalYear,
 }
 
 /**
