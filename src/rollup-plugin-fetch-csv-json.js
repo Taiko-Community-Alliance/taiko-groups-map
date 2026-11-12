@@ -38,7 +38,7 @@ module.exports = function remoteResolver() {
         // Pre-calculate regions
         const dataWithRegions = data.map((marker) => ({
           ...marker,
-          region: determineRegion([marker.longitude, marker.latitude])?.[0]
+          region: determineRegion([marker.longitude, marker.latitude])?.[0] || ''
         }))
         const code = 'export default ' + JSON.stringify(dataWithRegions);
         return code;
