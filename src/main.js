@@ -79,29 +79,21 @@ const rxPoints = reactive(points
 	})));
 	
 // Create a map marker layer
-const mapMarkerLayer = initializeTaikoMap(map, rxPoints);
-map.addLayer(mapMarkerLayer);
+const allRegionLayers = initializeTaikoMap(map, rxPoints);
 
 // Side Panel Stuff
 
 // Initialize the side panel
 const sideBar = createSideBar(map, rxPoints);
 
-mapMarkerLayer.addEventListener('visible-points', function({points, center}) {
+allRegionLayers.addEventListener('visible-points', function({points, center}) {
 	rxPoints.forEach(p => {
 		p.visible = points.includes(p);
 	});
 	sideBar.center = center;
 });
 
-sideBar.$events.addEventListener('visit', (e) => {
-	mapMarkerLayer.fire('center-point', {
-		point: e.detail.point
-	});
-});
-
-mapMarkerLayer.addEventListener('active-points', function({points}) {
-
+allRegionLayers.addEventListener('active-points', function({points}) {
 	rxPoints.forEach(p => {
 		p.active = points.includes(p);
 	});
@@ -111,4 +103,11 @@ mapMarkerLayer.addEventListener('active-points', function({points}) {
 		L.DomUtil.addClass(panel, 'opened');
 		L.DomUtil.removeClass(panel, 'closed');
 	}
+});
+
+sideBar.$events.addEventListener('visit', (e) => {
+	map.setView([e.detail.point.latitude, e.detail.point.longitude], 10);
+	allRegionLayers.fire('center-point', {
+		point: e.detail.point
+	});
 });

@@ -59,11 +59,42 @@ body {
 }
 
 .marker-active {
-  filter: hue-rotate(165deg);
+  /*filter: hue-rotate(165deg);*/
 }
 
 .point-entry {
   margin-top: 1em
+}
+
+.marker-region-southern-states {
+  filter: hue-rotate(0deg)
+}
+.marker-region-southern-california {
+  filter: hue-rotate(36deg)
+}
+.marker-region-east-coast {
+  filter: hue-rotate(72deg)
+}
+.marker-region-northern-california {
+  filter: hue-rotate(108deg)
+}
+.marker-region-midwest {
+  filter: hue-rotate(144deg)
+}
+.marker-region-mountain-plains {
+  filter: hue-rotate(180deg)
+}
+.marker-region-canada {
+  filter: hue-rotate(216deg)
+}
+.marker-region-pacific-northwest {
+  filter: hue-rotate(252deg)
+}
+.marker-region-hawaii {
+  filter: hue-rotate(288deg)
+}
+.marker-region- {
+  filter: hue-rotate(324deg)
 }
 
 .point-entry.active {
