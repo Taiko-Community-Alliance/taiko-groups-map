@@ -13,8 +13,15 @@ function debounce(fn, delay) {
 export const initializeTaikoMap = (map, points) => {
   const markerPointMap = new Map();
   const pointmarkerMap = new Map();
+
+  const regions = points.reduce((acc, {region}) => {
+    if(acc.includes(region)) return acc;
+    acc.push(region);
+    return acc;
+  },[]);
   
-  // // Initialize the marker cluster group
+  // Create a set of markers for each
+  // This prevents markers from different regions from being grouped together.
   const markers = L.markerClusterGroup({
     maxClusterRadius: 15,
     spiderfyOnMaxZoom: false,
@@ -60,36 +67,42 @@ export const initializeTaikoMap = (map, points) => {
       iconSize: [25, 25],
       iconAnchor: [12, 12],
       tooltipAnchor: [20, 0],
+      className: 'marker-region-pacific-northwest', //test
       // shadowUrl: 'images/marker-shadow.png',
       // shadowSize: [41, 41],
       // shadowAnchor: [13, 40]
   });
 
-  points
-    .forEach(function(point) {
-    var marker = L.marker([
-      point.latitude,
-      L.Util.wrapNum(point.longitude, [0,360], true)
-    ], {
-      title: point.name,
-      icon: mitsuIcon
-    }).bindTooltip(point.name);
-    markerPointMap.set(marker, point);
-    pointmarkerMap.set(point, marker);
-    marker.on('click', function() {
-      map.setView([point.latitude, L.Util.wrapNum(point.longitude, [0,360], true)]);
-      markers.fire('active-points', {points: [point]});
+  const markersToadd = points
+    .map(function(point) {
+      const marker = L.marker([
+        point.latitude,
+        point.longitude
+      ], {
+        title: point.name,
+        icon: mitsuIcon
+      }).bindTooltip(point.name);
+      marker.on('click', function() {
+        map.setView([point.latitude, point.longitude]);
+        markers.fire('active-points', {points: [point]});
+      });
+      return marker;
     });
-    markers.addLayer(marker);
+
+    
+  // Update marker/point maps
+  markersToadd.forEach((marker,i) => {
+    markerPointMap.set(marker, points[i]);
+    pointmarkerMap.set(points[i], marker);
   });
 
-  // // Add the marker cluster group to the map
-  map.addLayer(markers);
-
+  // Add new markers to cluster group
+  markers.addLayers(markersToadd);
+    
   // Handle cluster click event
   markers.on('clusterclick', function (e) {
     const point = e.latlng;
-    map.setView([point.lat, L.Util.wrapNum(point.lng, [0,360], true)]);
+    map.setView([point.lat, point.lng]);
     const points = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m));
     markers.fire('active-points', { points: points });
   });
@@ -142,7 +155,7 @@ export const initializeTaikoMap = (map, points) => {
 
   markers.on('center-point', function (e) {
     const point = e.point;
-    map.setView([point.latitude, L.Util.wrapNum(point.longitude, [0,360], true)], 10);
+    map.setView([point.latitude, point.longitude], 10);
     markers.fire('active-points', { points: [e.point] });
     setTimeout(() => {
       updateVisibleMarkers();
@@ -150,22 +163,25 @@ export const initializeTaikoMap = (map, points) => {
   });
 
   // Update visible markers
-  const updateVisibleMarkers = () => {
+  const updateVisibleMarkers = (clusterMarkers) => {
     const contained = [];
     const bounds = map.getBounds();
     const center = map.getCenter();
-    markers.eachLayer(function (l) {
+    clusterMarkers.eachLayer(function (l) {
       if (l instanceof L.Marker && bounds.contains(l.getLatLng())) {
         contained.push(markerPointMap.get(l));
       }
     });
 
-    markers.fire('visible-points', { points: contained, center });
+    clusterMarkers.fire('visible-points', { points: contained, center });
   }
 
   // Listen to moveend/zoomend with debounce
-  map.on('moveend zoomend', debounce(updateVisibleMarkers, 200));
-  updateVisibleMarkers();
+  map.on('moveend zoomend', debounce(updateVisibleMarkers.bind(null, markers), 200));
+  updateVisibleMarkers(markers);
+
+  // Add the marker cluster group to the map
+  map.addLayer(markers);
 
   return markers;
 }
