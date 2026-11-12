@@ -27,6 +27,7 @@ export const createSideBar = (map, points) => {
             :class="[{ active: point.active, matchesFilter: point.matchesFilter }, point.regionInternalName]"
           >
             <h3 class="point-name-action" @click="emitVisit(point)">{{ point.name }}</h3>
+            <p v-if="point.yearest">Est. {{ point.yearest }}</p>
             <p>{{ [[point.city, point.state].filter(Boolean).join(' '), point.country].filter(Boolean).join(', ') }}<span v-if="point.region"> ({{ point.region }})</span></p>
             <p v-if="point.website">
               <a :href="point.website" target="_blank">{{ point.website }}</a>
