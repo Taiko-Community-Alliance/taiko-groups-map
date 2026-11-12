@@ -17,6 +17,7 @@ const mapPointsSchema = {
   latitude: schemaTypes.parseFloatThrow,
   longitude: schemaTypes.parseFloatThrow,
   website: schemaTypes.optionalUrl,
+  yearest: schemaTypes.optionalYear
 }
 
 module.exports = function remoteResolver() {
