@@ -7,7 +7,6 @@ import './map-styles.css';
 import { initializeTaikoMap } from './map';
 import { createSideBar } from './sidebar';
 import { reactive } from 'vue';
-import regionLayers from './region-layers.json';
 
 // Create map
 const map = L.map('map')
@@ -18,42 +17,42 @@ const map = L.map('map')
 	, 3); // Zoom level 
 
 //var myRepeatingMarkers = L.gridLayer.repeatedMarkers().addTo(map);
-function normalizeLongitudes(geojson) {
-  geojson.features.forEach(feature => {
-    const coords = feature.geometry.coordinates;
+// function normalizeLongitudes(geojson) {
+//   geojson.features.forEach(feature => {
+//     const coords = feature.geometry.coordinates;
 
-    function fixCoordArray(arr) {
-      arr.forEach(pt => {
-        // Recursively handle nested arrays (MultiPolygons)
-        if (Array.isArray(pt[0])) {
-          fixCoordArray(pt);
-        } else {
-          // Normalize longitude: wrap from 0–360 to -180–180
-          pt[0] = L.Util.wrapNum(pt[0], [0,360], true);
-        }
-      });
-    }
+//     function fixCoordArray(arr) {
+//       arr.forEach(pt => {
+//         // Recursively handle nested arrays (MultiPolygons)
+//         if (Array.isArray(pt[0])) {
+//           fixCoordArray(pt);
+//         } else {
+//           // Normalize longitude: wrap from 0–360 to -180–180
+//           pt[0] = L.Util.wrapNum(pt[0], [0,360], true);
+//         }
+//       });
+//     }
 
-    fixCoordArray(coords);
-  });
+//     fixCoordArray(coords);
+//   });
 
-  return geojson;
-}
+//   return geojson;
+// }
 
-const geojsonLayer = L.geoJSON(normalizeLongitudes(regionLayers), {
-	style: feat => ({
-		color:        feat.properties.stroke || '#555',
-		weight:       0,//feat.properties['stroke-width'] || 2,
-		opacity:      feat.properties['stroke-opacity'] ?? 1,
-		fillColor:    feat.properties.fill || '#555',
-		fillOpacity:  0.5,
-		stroke: false,
-	}),
-	onEachFeature: (feat, layer) =>
-		layer.bindPopup(`<strong>${feat.properties.name}</strong>`)
-}).addTo(map);
+// const geojsonLayer = L.geoJSON(normalizeLongitudes(regionLayers), {
+// 	style: feat => ({
+// 		color:        feat.properties.stroke || '#555',
+// 		weight:       0,//feat.properties['stroke-width'] || 2,
+// 		opacity:      feat.properties['stroke-opacity'] ?? 1,
+// 		fillColor:    feat.properties.fill || '#555',
+// 		fillOpacity:  0.5,
+// 		stroke: false,
+// 	}),
+// 	onEachFeature: (feat, layer) =>
+// 		layer.bindPopup(`<strong>${feat.properties.name}</strong>`)
+// }).addTo(map);
 
-map.fitBounds(geojsonLayer.getBounds());
+// map.fitBounds(geojsonLayer.getBounds());
 
 // Add a main tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
