@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
+import { regionToInternalName } from './util';
 
 function debounce(fn, delay) {
   let timeout;
@@ -23,7 +24,7 @@ export const initializeTaikoMap = (map, points) => {
   // Create cluster group for each region
   const regionalClusterMarkers = regions.map((region) => {
     const pointsInRegion = points.filter(({region: r}) => r === region);
-    const regionClassName = 'marker-region-' + region.toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z\-]/ig,'');
+    const regionClassName = 'marker-region-' + regionToInternalName(region);
     // Create a set of markers for each
     // This prevents markers from different regions from being grouped together.
     const markers = L.markerClusterGroup({

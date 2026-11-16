@@ -7,6 +7,7 @@ import './map-styles.css';
 import { initializeTaikoMap } from './map';
 import { createSideBar } from './sidebar';
 import { reactive } from 'vue';
+import { regionToInternalName } from './util';
 
 // Create map
 const map = L.map('map')
@@ -74,7 +75,8 @@ const rxPoints = reactive(points
 		visible: true,
 		active: false,
 		index: i,
-		longitude: L.Util.wrapNum(point.longitude, LONG_WRAP, true)
+		longitude: L.Util.wrapNum(point.longitude, LONG_WRAP, true),
+		regionInternalName: regionToInternalName(point.region),
 	})));
 	
 // Create a map marker layer

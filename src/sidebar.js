@@ -24,7 +24,7 @@ export const createSideBar = (map, points) => {
             v-for="point in visiblePoints"
             :key="point.index"
             class="point-entry"
-            :class="{ active: point.active, matchesFilter: point.matchesFilter }"
+            :class="[{ active: point.active, matchesFilter: point.matchesFilter }, point.regionInternalName]"
           >
             <h3 class="point-name-action" @click="emitVisit(point)">{{ point.name }}</h3>
             <p>{{ [[point.city, point.state].filter(Boolean).join(' '), point.country].filter(Boolean).join(', ') }}<span v-if="point.region"> ({{ point.region }})</span></p>
