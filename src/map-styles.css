@@ -93,13 +93,54 @@ body {
 .marker-region-hawaii {
   filter: hue-rotate(288deg)
 }
-.marker-region- {
+.marker-region-international {
   filter: hue-rotate(324deg)
 }
 
+
+.sidebar-list .point-entry.active.southern-states {
+  border-color: hsl(calc(0deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(0deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.southern-california {
+  border-color: hsl(calc(36deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(36deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.east-coast {
+  border-color: hsl(calc(72deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(72deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.northern-california {
+  border-color: hsl(calc(108deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(108deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.midwest {
+  border-color: hsl(calc(144deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(144deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.mountain-plains {
+  border-color: hsl(calc(180deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(180deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.canada {
+  border-color: hsl(calc(216deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(216deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.pacific-northwest {
+  border-color: hsl(calc(252deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(252deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.hawaii {
+  border-color: hsl(calc(288deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(288deg + 34deg), 90%, 95%);
+}
+.sidebar-list .point-entry.active.international {
+  border-color: hsl(calc(324deg + 34deg), 90%, 30%);
+  background-color: hsl(calc(324deg + 34deg), 90%, 95%);
+}
+
 .point-entry.active {
-    background-color: #daedff;
-    border-left: 3px solid #2194fc;
+    border-left: 3px solid;
     padding-left: 3px;
 }
 
