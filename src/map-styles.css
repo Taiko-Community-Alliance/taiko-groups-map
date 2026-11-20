@@ -147,3 +147,8 @@ body {
 .point-entry:not(.matchesFilter) {
   opacity: 0.25;
 }
+
+.leaflet-popup.popup-name-list .leaflet-popup-content {
+  max-height: 100px;
+  overflow-y: scroll;
+}
