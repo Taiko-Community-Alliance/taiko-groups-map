@@ -56,8 +56,16 @@ export const createSideBar = (map, points) => {
             };
           })
           .sort((a, b) => {
-            return b.matchesFilter - a.matchesFilter ||
-            Math.sign(a.distanceFromCenter - b.distanceFromCenter) || b.active - a.active;
+            if(b.matchesFilter !== a.matchesFilter) return b.matchesFilter - a.matchesFilter;
+            if(b.active !== a.active) {
+              return b.active - a.active;
+            } else if(b.active) {
+              // Both are active
+              return a.name.localeCompare(b.name);
+            } else {
+              // both are inactive
+              return Math.sign(a.distanceFromCenter - b.distanceFromCenter);
+            }
           });
       });
       const visiblePoints = computed(() => {

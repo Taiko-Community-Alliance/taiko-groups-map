@@ -14,6 +14,7 @@ function debounce(fn, delay) {
 export const initializeTaikoMap = (map, points) => {
   const markerPointMap = new Map();
   const pointmarkerMap = new Map();
+  const pointClustergroupMap = new Map();
 
   const regions = points.reduce((acc, {region}) => {
     if(acc.includes(region)) return acc;
@@ -39,18 +40,13 @@ export const initializeTaikoMap = (map, points) => {
       },
       spiderfyDistanceMultiplier: 0.01,
       iconCreateFunction: function(cluster) {
-        const markers = cluster.getAllChildMarkers();
-        const cities = Array.from(new Set(markers.map(m => markerPointMap.get(m)?.city).filter(Boolean)));
-        const states = Array.from(new Set(markers.map(m => markerPointMap.get(m)?.state).filter(Boolean)));
-        cluster.cities = cities;
-        cluster.states = states;
-        var childCount = cluster.getChildCount();
+        const childCount = cluster.getChildCount();
   
         return L.divIcon({
           className: 'marker-cluster-basic ' + regionClassName,
           html: `
             <div style="position: relative; text-align: center;">
-              <img src="images/marker-mitsu-icon-cluster-2x.png" class="" title="${cities}" alt="Marker" tabindex="0" style="width: 25px; height: 41px;">
+              <img src="images/marker-mitsu-icon-cluster-2x.png" class="" title="$" alt="Marker" tabindex="0" style="width: 25px; height: 41px;">
               <div class="marker-cluster-count-text">
                 ${childCount}
               </div>
@@ -58,8 +54,7 @@ export const initializeTaikoMap = (map, points) => {
           `,
           iconSize: [25, 41], // size of the original marker image
           iconAnchor: [12, 41], // anchor the bottom point of the icon to the coordinates
-  
-          tooltipAnchor: [20, 50],
+          popupAnchor: [0,-45],
           shadowUrl: 'images/marker-shadow.png',
           shadowSize: [41, 41],
           shadowAnchor: [13, 40]
@@ -67,16 +62,24 @@ export const initializeTaikoMap = (map, points) => {
       }
     });
   
-    const mitsuIcon = L.icon({
-        iconUrl: 'images/marker-mitsu-icon-simple-2x.png',
-        iconSize: [25, 25],
-        iconAnchor: [12, 12],
-        tooltipAnchor: [20, 0],
-        className: regionClassName,
-        // shadowUrl: 'images/marker-shadow.png',
-        // shadowSize: [41, 41],
-        // shadowAnchor: [13, 40]
+    const mitsuIcon = L.divIcon({
+      className: 'marker-cluster-basic ' + regionClassName,
+      html: `
+        <div style="position: relative; text-align: center;">
+          <img src="images/marker-mitsu-icon-cluster-2x.png" class="" title="" alt="Marker" tabindex="0" style="width: 25px; height: 41px;">
+          <div class="marker-cluster-count-text">
+            1
+          </div>
+        </div>
+      `,
+      iconSize: [25, 41], // size of the original marker image
+      iconAnchor: [12, 41], // anchor the bottom point of the icon to the coordinates
+      popupAnchor: [0,-45],
+      shadowUrl: 'images/marker-shadow.png',
+      shadowSize: [41, 41],
+      shadowAnchor: [13, 40]
     });
+
   
     const markersToadd = pointsInRegion
       .map(function(point) {
@@ -86,7 +89,9 @@ export const initializeTaikoMap = (map, points) => {
         ], {
           title: point.name,
           icon: mitsuIcon
-        }).bindTooltip(point.name);
+        }).bindPopup(point.name, {className: 'popup-name-list'}).on('popupclose', (e) => {
+          // markers.fire('active-points', { points: [] });
+        });
         marker.on('click', function() {
           map.setView([point.latitude, point.longitude]);
           markers.fire('active-points', {points: [point]});
@@ -99,6 +104,7 @@ export const initializeTaikoMap = (map, points) => {
     markersToadd.forEach((marker,i) => {
       markerPointMap.set(marker, pointsInRegion[i]);
       pointmarkerMap.set(pointsInRegion[i], marker);
+      pointClustergroupMap.set(pointsInRegion[i], markers);
     });
   
     // Add new markers to cluster group
@@ -164,19 +170,13 @@ export const initializeTaikoMap = (map, points) => {
       map.setView([point.lat, point.lng]);
       const points = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m));
       markers.fire('active-points', { points: points });
-    });
-
-    // Add tooltips to clusters
-    markers.on('clustermouseover', function(e) {
-      const cities = e.sourceTarget.cities;
-      let toolTipDescription = cities.slice(0, 3).join(', ');
-      if (cities.length > 3) {
-        toolTipDescription += ', ...';
-      }
-      if(e.sourceTarget.states.length == 1) {
-        toolTipDescription += ` ${e.sourceTarget.states[0]}`;
-      }
-      e.sourceTarget.bindTooltip(`<i>${toolTipDescription}</i>`, {offset: [20,0]}).openTooltip();
+      const groupNames = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m)?.name).sort((a,b) => a.localeCompare(b));
+      const popUpText = groupNames.join('<br>');
+      // TODO - Why does popupclose fire multiple times?
+      e.sourceTarget.bindPopup(popUpText, {offset: [0, -38], className: 'popup-name-list'}).openPopup().on('popupclose', (_e) => {
+        e.sourceTarget.unbindPopup();
+        // allRegionLayers.fire('active-points', { points: [] });
+      });
     });
 
     markers.on('active-points', (e) => {
@@ -195,10 +195,20 @@ export const initializeTaikoMap = (map, points) => {
     allRegionLayers.fire('active-points', { points: [e.point] });
     setTimeout(() => {
       updateVisibleMarkers(allRegionLayers);
+      const marker = pointClustergroupMap.get(e.point)?.getVisibleParent(pointmarkerMap.get(e.point));
+      // Hacky way to determine difference between marker and cluster marker
+      const isClusterMarker = typeof marker._markers !== 'undefined';
+      if(isClusterMarker) {
+        marker.bindPopup(e.point.name, {className: 'popup-name-list', offset: [0, -38]}).openPopup().on('popupclose', (_e) => {
+          marker.unbindPopup();
+        });
+      } else {
+        marker.openPopup();
+      }
     }, 500);
   });
 
-  // Add the marker cluster group to the map
+  // Add the marker cluster group to the map 
   map.addLayer(allRegionLayers);
 
   return allRegionLayers;
