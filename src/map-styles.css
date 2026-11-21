@@ -11,13 +11,15 @@ body {
   padding: 10px 10px 0 10px;
   display: block;
   height: 100%;
+  box-sizing: border-box;
 }
 
 .sidebar-list {
-  overflow: scroll;
+  overflow-y: scroll;
   display: block;
   height: 100%;
   margin-right: -10px;
+  flex: 1 1 auto;
 }
 
 .marker-cluster-basic {
@@ -37,6 +39,12 @@ body {
     color: white;
     font-size: 17px;
     white-space: nowrap;
+}
+
+.sidebar-app-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
 }
 
 .sidepanel-tab-content h3 {

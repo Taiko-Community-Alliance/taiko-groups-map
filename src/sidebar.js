@@ -14,8 +14,7 @@ export const createSideBar = (map, points) => {
 
   const SidePanelApp = {
     template: `
-      <div>
-        <input v-model="filter" placeholder="Search..." class="search-input" />
+      <div class="sidebar-app-container">
         <div v-if="invisibleMatches > 0 && filter" class="info-message">
           {{ invisibleMatches }} matching result<span v-if="invisibleMatches > 1">s</span> hidden from view.
         </div>
