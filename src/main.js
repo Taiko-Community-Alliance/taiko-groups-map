@@ -106,8 +106,19 @@ allRegionLayers.addEventListener('active-points', function({points}) {
 	}
 });
 
+sideBar.$events.addEventListener('zoom-to-points', (e) => {
+	allRegionLayers.fire('fit-bounds', {
+		points: e.detail.points
+	});
+});
+
+sideBar.$events.addEventListener('visible-points', (e) => {
+	allRegionLayers.fire('filter-points', {
+		points: e.detail.points
+	});
+});
+
 sideBar.$events.addEventListener('visit', (e) => {
-	map.setView([e.detail.point.latitude, e.detail.point.longitude], 10);
 	allRegionLayers.fire('center-point', {
 		point: e.detail.point
 	});
