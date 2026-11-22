@@ -93,7 +93,7 @@ export const createSideBar = (map, points) => {
       const visiblePoints = computed(() => {
         return searchSortedFilteredPoints.value
           .filter(p => {
-            return p.visible || p.active;
+            return p.visible;
           })
       });
 

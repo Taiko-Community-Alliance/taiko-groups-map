@@ -189,6 +189,7 @@ export const initializeTaikoMap = (map, points) => {
     regionalClusterMarkers.forEach((cluster) => {
       cluster.refreshClusters()
     });
+    updateVisibleMarkers(allRegionLayers);
   });
 
   // Add the marker cluster group to the map 
