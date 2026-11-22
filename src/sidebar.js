@@ -85,6 +85,8 @@ export const createSideBar = (map, points) => {
           .sort((a, b) => {
             if(b.active !== a.active) {
               return b.active - a.active;
+            } else if(b.yearest !== a.yearest) {
+              return Math.sign((a.yearest || 9999) - (b.yearest || 9999));
             } else {
               return a.name.localeCompare(b.name);
             }
