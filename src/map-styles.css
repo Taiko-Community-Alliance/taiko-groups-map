@@ -193,3 +193,10 @@ body {
   font-weight: 500;
   font-size: 1em;
 }
+
+#tca-logo {
+  height: 16px;
+  background: #ffffffa3;
+  padding: 2px 5px;
+  margin: 0;
+}

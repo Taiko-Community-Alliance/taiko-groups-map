@@ -10,7 +10,7 @@ import { reactive } from 'vue';
 import { regionToInternalName } from './util';
 
 // Create map
-const map = L.map('map')
+const map = L.map('map', {attributionControl: false})
 	// Initial view of the map
 	.setView([
 		37.7749,
@@ -86,3 +86,18 @@ sideBar.$events.addEventListener('visit', (e) => {
 		point: e.detail.point
 	});
 });
+
+class AttributionLogo extends L.Control {
+	onAdd(map) {
+		const img = document.createElement('img');
+		img.src = 'images/tca-logo.png';
+		img.id = 'tca-logo';
+		return img;
+	}
+
+	onRemove(map) {
+		// Nothing to do here
+	}
+}
+
+new AttributionLogo({ position: 'bottomright' }).addTo(map);
