@@ -91,7 +91,6 @@ allRegionLayers.addEventListener('visible-points', function({points, center}) {
 	rxPoints.forEach(p => {
 		p.visible = points.includes(p);
 	});
-	sideBar.center = center;
 });
 
 allRegionLayers.addEventListener('active-points', function({points}) {
@@ -112,7 +111,7 @@ sideBar.$events.addEventListener('zoom-to-points', (e) => {
 	});
 });
 
-sideBar.$events.addEventListener('visible-points', (e) => {
+sideBar.$events.addEventListener('filter-points', (e) => {
 	allRegionLayers.fire('filter-points', {
 		points: e.detail.points
 	});

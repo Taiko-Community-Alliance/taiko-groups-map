@@ -90,9 +90,7 @@ export const initializeTaikoMap = (map, points) => {
         ], {
           title: point.name,
           icon: mitsuIcon
-        }).bindPopup(point.name, {className: 'popup-name-list'}).on('popupclose', (e) => {
-          // markers.fire('active-points', { points: [] });
-        });
+        }).bindPopup(point.name, {className: 'popup-name-list'});
         marker.on('click', function() {
           markers.fire('active-points', {points: [point]});
         });
@@ -112,38 +110,6 @@ export const initializeTaikoMap = (map, points) => {
 
     return markers;
   });
-
-  function updateActiveStyles(regionLayers, e) {
-    regionLayers.eachLayer(function(regionLayer) {
-      // Remove active class from all markers
-      regionLayer.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-          const icon = layer._icon;
-          if (icon) icon.classList.remove('marker-active');
-        }
-      });
-      // Remove active class from all cluster icons
-      regionLayer._featureGroup.eachLayer(function(layer) {
-        if (layer instanceof L.MarkerCluster) {
-          const icon = layer._icon;
-          if (icon) icon.classList.remove('marker-active');
-        }
-      });
-
-      // Add active class to selected markers
-      (e.points || []).forEach(point => {
-        const marker = pointmarkerMap.get(point);
-        if (marker && marker._icon) {
-          marker._icon.classList.add('marker-active');
-        }
-        // If marker is clustered, add marker-active to its cluster icon
-        const parentCluster = regionLayer.getVisibleParent(marker);
-        if (parentCluster && parentCluster._icon) {
-          parentCluster._icon.classList.add('marker-active');
-        }
-      });
-    });
-  }
 
   // Update visible markers
   function updateVisibleMarkers(regionLayers) {
@@ -172,17 +138,14 @@ export const initializeTaikoMap = (map, points) => {
       // TODO - Why does popupclose fire multiple times?
       e.sourceTarget.bindPopup(popUpText, {offset: [0, -38], className: 'popup-name-list'}).openPopup().on('popupclose', (_e) => {
         e.sourceTarget.unbindPopup();
-        // allRegionLayers.fire('active-points', { points: [] });
       });
     });
 
     markers.on('active-points', (e) => {
-      allRegionLayers.fire('active-points', e); // Maybe correct?
+      allRegionLayers.fire('active-points', e);
     })
 
   });
-
-  allRegionLayers.on('active-points', updateActiveStyles.bind(null, allRegionLayers));
 
   // Listen to moveend/zoomend with debounce
   map.on('moveend zoomend', debounce(updateVisibleMarkers.bind(null, allRegionLayers), 200));
@@ -224,7 +187,6 @@ export const initializeTaikoMap = (map, points) => {
     toRemove.forEach(([marker, cluster]) => marker.removeFrom(cluster));
     toAdd.forEach(([marker, cluster]) => marker.addTo(cluster));
     regionalClusterMarkers.forEach((cluster) => {
-      // cluster.removeLayers(toRemove);
       cluster.refreshClusters()
     });
   });
