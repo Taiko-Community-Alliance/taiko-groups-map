@@ -33,6 +33,7 @@ export const initializeTaikoMap = (map, points) => {
       spiderfyOnMaxZoom: false,
       showCoverageOnHover: false,
       zoomToBoundsOnClick: false,
+      animateAddingMarkers: true,
       spiderLegPolylineOptions: {
         color: '#222',
         weight: 0,
@@ -93,7 +94,6 @@ export const initializeTaikoMap = (map, points) => {
           // markers.fire('active-points', { points: [] });
         });
         marker.on('click', function() {
-          map.setView([point.latitude, point.longitude]);
           markers.fire('active-points', {points: [point]});
         });
         return marker;
@@ -157,7 +157,6 @@ export const initializeTaikoMap = (map, points) => {
         }
       });
     });
-
     regionLayers.fire('visible-points', { points: contained, center });
   }
   
@@ -166,8 +165,6 @@ export const initializeTaikoMap = (map, points) => {
   regionalClusterMarkers.forEach((markers) => {
     // Handle cluster click event
     markers.on('clusterclick', function(e) {
-      const point = e.latlng;
-      map.setView([point.lat, point.lng]);
       const points = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m));
       markers.fire('active-points', { points: points });
       const groupNames = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m)?.name).sort((a,b) => a.localeCompare(b));
@@ -192,6 +189,10 @@ export const initializeTaikoMap = (map, points) => {
   updateVisibleMarkers(allRegionLayers);
 
   allRegionLayers.on('center-point', function(e) {
+    const group = new L.featureGroup([pointmarkerMap.get(e.point)]);
+    // Assuming we're on desktop, we add padding to the pan
+    const offset = window.innerWidth >= 1024 ? 400 : 0;
+    map.flyToBounds(group.getBounds(), {maxZoom: 8, duration: 0.4, paddingTopLeft: [offset, 0]});
     allRegionLayers.fire('active-points', { points: [e.point] });
     setTimeout(() => {
       updateVisibleMarkers(allRegionLayers);
@@ -206,6 +207,26 @@ export const initializeTaikoMap = (map, points) => {
         marker.openPopup();
       }
     }, 500);
+  });
+  
+  allRegionLayers.on('fit-bounds', function(e) {
+    const markers = e.points.map((point) => pointmarkerMap.get(point));
+    const group = new L.featureGroup(markers);
+    // Assuming we're on desktop, we add padding to the pan
+    const offset = window.innerWidth >= 1024 ? 400 : 0;
+    map.flyToBounds(group.getBounds(), {maxZoom: 8, duration: 0.4, paddingTopLeft: [offset, 0]});
+  });
+
+  allRegionLayers.on('filter-points', function(e) {
+    const toRemove = points.filter((point, i) => !e.points.includes(point)).map((point) => [pointmarkerMap.get(point), pointClustergroupMap.get(point)]);
+    const toAdd = points.filter((point, i) => e.points.includes(point)).map((point) => [pointmarkerMap.get(point), pointClustergroupMap.get(point)]);
+
+    toRemove.forEach(([marker, cluster]) => marker.removeFrom(cluster));
+    toAdd.forEach(([marker, cluster]) => marker.addTo(cluster));
+    regionalClusterMarkers.forEach((cluster) => {
+      // cluster.removeLayers(toRemove);
+      cluster.refreshClusters()
+    });
   });
 
   // Add the marker cluster group to the map 

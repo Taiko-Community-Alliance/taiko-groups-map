@@ -14,12 +14,20 @@ body {
   box-sizing: border-box;
 }
 
+.sidebar-app-container h2 {
+  margin-top: 0;
+}
+
 .sidebar-list {
   overflow-y: scroll;
   display: block;
   height: 100%;
   margin-right: -10px;
   flex: 1 1 auto;
+  margin-left: -10px;
+  padding-left: 10px;
+  background-color: #fff;
+  box-shadow: inset 0px 19px 9px -20px #000;
 }
 
 .marker-cluster-basic {
@@ -45,6 +53,19 @@ body {
   display: flex;
   flex-flow: column;
   height: 100%;
+}
+
+.search-filters {
+  margin-bottom: 1em;
+}
+
+.search-filters input[type="range"] {
+  display: block;
+  width: 100%;
+}
+
+.sidepanel#side-panel {
+  background-color: #edf4f6;
 }
 
 .sidepanel-tab-content h3 {
@@ -159,4 +180,9 @@ body {
 .leaflet-popup.popup-name-list .leaflet-popup-content {
   max-height: 100px;
   overflow-y: scroll;
+}
+
+.sidepanel#side-panel .sidepanel-toggle-container .sidepanel-toggle-button {
+  border-left: none;
+  box-shadow: 8px 2px 8px -3px #3c40434d;
 }
