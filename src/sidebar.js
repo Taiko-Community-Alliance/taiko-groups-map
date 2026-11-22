@@ -14,6 +14,7 @@ export const createSideBar = (map, points) => {
   const years = points.map(({yearest}) => yearest).filter(Boolean).sort();
   const yearMax = years.pop();
   const yearMin = years.shift();
+  const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSesYmefC6XYIYyQ-JqY4bUnQvMnHF84CCZqWgH9OGmEOEz3LA/viewform';
 
   const pointsJoinedData = new Map();
 
@@ -58,6 +59,7 @@ export const createSideBar = (map, points) => {
           </div>
           <p v-if="visiblePoints.length == 0 && invisibleMatches == 0">No matching groups found.</p>
         </div>
+        <div id="add-group-link"><p>See something missing or needing updated? <a target="_blank" href="${formUrl}">Fill out this form!</a></p></div>
       </div>
     `,
     setup() {
