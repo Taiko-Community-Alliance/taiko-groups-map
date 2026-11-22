@@ -17,44 +17,6 @@ const map = L.map('map')
 		L.Util.wrapNum(-122.4194, [0,360], true)]
 	, 3); // Zoom level 
 
-//var myRepeatingMarkers = L.gridLayer.repeatedMarkers().addTo(map);
-// function normalizeLongitudes(geojson) {
-//   geojson.features.forEach(feature => {
-//     const coords = feature.geometry.coordinates;
-
-//     function fixCoordArray(arr) {
-//       arr.forEach(pt => {
-//         // Recursively handle nested arrays (MultiPolygons)
-//         if (Array.isArray(pt[0])) {
-//           fixCoordArray(pt);
-//         } else {
-//           // Normalize longitude: wrap from 0–360 to -180–180
-//           pt[0] = L.Util.wrapNum(pt[0], [0,360], true);
-//         }
-//       });
-//     }
-
-//     fixCoordArray(coords);
-//   });
-
-//   return geojson;
-// }
-
-// const geojsonLayer = L.geoJSON(normalizeLongitudes(regionLayers), {
-// 	style: feat => ({
-// 		color:        feat.properties.stroke || '#555',
-// 		weight:       0,//feat.properties['stroke-width'] || 2,
-// 		opacity:      feat.properties['stroke-opacity'] ?? 1,
-// 		fillColor:    feat.properties.fill || '#555',
-// 		fillOpacity:  0.5,
-// 		stroke: false,
-// 	}),
-// 	onEachFeature: (feat, layer) =>
-// 		layer.bindPopup(`<strong>${feat.properties.name}</strong>`)
-// }).addTo(map);
-
-// map.fitBounds(geojsonLayer.getBounds());
-
 // Add a main tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	attribution: '&copy; OpenStreetMap contributors'
