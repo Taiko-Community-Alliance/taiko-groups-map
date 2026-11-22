@@ -37,7 +37,7 @@ export const createSideBar = (map, points) => {
         <h2>Filters</h2>
         <div class="search-filters">
           <input v-model="filterStr" placeholder="Search..." class="search-input" />
-          <p v-if="yearFilter == ${yearMax + 1}">Established date: All groups</p><p v-else>Established date: between ${yearMin} and {{ yearFilter }}</p>
+          <p v-if="yearFilter == ${yearMax + 1}">Established date: any</p><p v-else>Established date: between ${yearMin} and {{ yearFilter }}</p>
           <input id="year-filter" name="year-filter" type="range" min="${yearMin}" max="${yearMax + 1}" step="1" v-model.number="yearFilter" />
           </div>
         <h2>Results ({{ visiblePoints.length }})</h2>
@@ -47,7 +47,7 @@ export const createSideBar = (map, points) => {
             v-for="point in visiblePoints"
             :key="point.index"
             class="point-entry"
-            :class="[{ active: point.active, matchesFilter: point.matchesFilter }, point.regionInternalName]"
+            :class="[{ active: point.active }, point.regionInternalName]"
           >
             <h3 class="point-name-action" @click="emitVisit(point)">{{ point.name }}</h3>
             <p v-if="point.yearest">Est. {{ point.yearest }}</p>
@@ -81,43 +81,28 @@ export const createSideBar = (map, points) => {
         }); 
       });
       const searchSortedFilteredPoints = computed(() => {
-        return matchedFilter.value
-          .map(p => {
-            return {
-              ...p,
-              distanceFromCenter: haversine(map.getCenter().lat, map.getCenter().lng, p.latitude, p.longitude),
-              matchesFilter: true,
-            };
-          })
+        return Array.from(matchedFilter.value)
           .sort((a, b) => {
-            if(b.matchesFilter !== a.matchesFilter) return b.matchesFilter - a.matchesFilter;
             if(b.active !== a.active) {
               return b.active - a.active;
-            } else if(b.active) {
-              // Both are active
-              return a.name.localeCompare(b.name);
             } else {
-              // both are inactive
-              return Math.sign(a.distanceFromCenter - b.distanceFromCenter);
+              return a.name.localeCompare(b.name);
             }
           });
       });
       const visiblePoints = computed(() => {
         return searchSortedFilteredPoints.value
-          .filter(p => p.visible || p.active)
+          .filter(p => {
+            return p.visible || p.active;
+          })
       });
 
       const invisibleMatches = computed(() => {
         return searchSortedFilteredPoints.value.filter(point => !visiblePoints.value.includes(point)).length;
       });
-  
-      const center = reactive({
-        latitude: map.getCenter().lat,
-        longitude: L.Util.wrapNum(map.getCenter().lng, [0, 360], true)
-      });
 
       watch(matchedFilter, (newValue, oldValue) => {
-        emitter.dispatchEvent(new CustomEvent('visible-points', {
+        emitter.dispatchEvent(new CustomEvent('filter-points', {
           detail: {
             points: points
               .filter(p => 
@@ -132,7 +117,6 @@ export const createSideBar = (map, points) => {
         filterStr,
         yearFilter,
         visiblePoints,
-        center,
         emitVisit,
         emitZoomInvisible,
         invisibleMatches
