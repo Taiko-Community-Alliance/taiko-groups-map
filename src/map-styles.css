@@ -175,7 +175,7 @@ body {
 
 .leaflet-popup.popup-name-list .leaflet-popup-content {
   max-height: 100px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .sidepanel#side-panel .sidepanel-toggle-container .sidepanel-toggle-button {
