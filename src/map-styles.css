@@ -178,6 +178,11 @@ body {
   overflow-y: auto;
 }
 
+.leaflet-popup.popup-name-list .leaflet-popup-content ul {
+  padding: 0 0 0 1em;
+  margin: 0;
+}
+
 .sidepanel#side-panel .sidepanel-toggle-container .sidepanel-toggle-button {
   border-left: none;
   box-shadow: 8px 2px 8px -3px #3c40434d;

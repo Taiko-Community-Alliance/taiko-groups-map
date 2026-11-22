@@ -133,8 +133,17 @@ export const initializeTaikoMap = (map, points) => {
     markers.on('clusterclick', function(e) {
       const points = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m));
       markers.fire('active-points', { points: points });
-      const groupNames = e.sourceTarget.getAllChildMarkers().map(m => markerPointMap.get(m)?.name).sort((a,b) => a.localeCompare(b));
-      const popUpText = groupNames.join('<br>');
+      const groupNames = e.sourceTarget.getAllChildMarkers()
+        .map(m => markerPointMap.get(m))
+        .sort((a,b) => {
+          if(b.yearest !== a.yearest) {
+            return Math.sign((a.yearest || 9999) - (b.yearest || 9999));
+          } else {
+            return a.name.localeCompare(b.name);
+          }
+        })
+        .map(({name}) => name);
+      const popUpText = `<ul><li>${groupNames.join('</li><li>')}</li></ul>`;
       // TODO - Why does popupclose fire multiple times?
       e.sourceTarget.bindPopup(popUpText, {offset: [0, -38], className: 'popup-name-list'}).openPopup().on('popupclose', (_e) => {
         e.sourceTarget.unbindPopup();
