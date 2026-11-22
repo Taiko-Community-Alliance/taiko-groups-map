@@ -90,6 +90,8 @@ const sideBar = createSideBar(map, rxPoints);
 allRegionLayers.addEventListener('visible-points', function({points, center}) {
 	rxPoints.forEach(p => {
 		p.visible = points.includes(p);
+		// Force points that aren't visible to be inactive
+		if(!p.visible) p.active = false;
 	});
 });
 
